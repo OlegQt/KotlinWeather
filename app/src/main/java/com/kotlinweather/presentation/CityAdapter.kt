@@ -8,14 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.kotlinweather.R
 import com.kotlinweather.http.Cities
-import com.kotlinweather.http.City
 import com.kotlinweather.http.CityWeather
 
 class CityAdapter(private val data: MutableMap<Cities, CityWeather?>) :
     RecyclerView.Adapter<CityViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.city_item,parent,false)
+            .inflate(R.layout.city_item, parent, false)
         return CityViewHolder(itemView)
     }
 
@@ -26,10 +25,15 @@ class CityAdapter(private val data: MutableMap<Cities, CityWeather?>) :
     override fun getItemCount(): Int = data.size
 }
 
-class CityViewHolder(item:View):ViewHolder(item){
+class CityViewHolder(item: View) : ViewHolder(item) {
     private val txtCityName: TextView = item.findViewById(R.id.txt_city_name)
-    fun bind(city:Cities){
+    private val txtCountry: TextView = item.findViewById(R.id.txt_secondary_info)
+    private val txtLat: TextView = item.findViewById(R.id.txt_support_info)
+
+    fun bind(city: Cities) {
         txtCityName.text = city.name
+        txtCountry.text = city.country
+        txtLat.text="${city.lat}  |  ${city.lon}"
     }
 
 }

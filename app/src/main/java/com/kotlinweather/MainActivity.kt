@@ -2,10 +2,16 @@ package com.kotlinweather
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val x= findViewById<TextView>(R.id.txt)
+        x.setOnClickListener{
+
+        }
     }
 }

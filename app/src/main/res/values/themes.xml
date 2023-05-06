@@ -6,11 +6,15 @@
         <item name="colorPrimaryVariant">@color/salmon</item>
         <item name="colorOnPrimary">@color/dk_grey</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondary">@color/Light_Grey</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <!-- colorAccent is used as the default value for colorControlActivated
+         which is used to tint widgets -->
+        <!-- THIS IS WHAT YOU'RE LOOKING FOR -->
+        <item name="colorAccent">#0091BC</item>
     </style>
 </resources>

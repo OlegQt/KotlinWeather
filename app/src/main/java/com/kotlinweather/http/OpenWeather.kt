@@ -33,15 +33,7 @@ class OpenWeather(var listener: Updatable?) {
             ) {
                 Log.d(TAG,response.code().toString())
                 if (response.code() == 200) {
-                    val citiesLocations = mutableListOf<Cities>()
-                    if (!response.body().isNullOrEmpty()) {
-                        response.body()?.forEach {
-                            Log.d(TAG,"${it.name} ${it.country} ${it.lon}   ${it.lon}")
-                            citiesLocations.add(it)
-                        }
-
-                        //listener?.insertCity(citiesLocations)
-                    }
+                    if (response.body()!=null)  listener?.insertCity(response.body()!!)
                 }
             }
 

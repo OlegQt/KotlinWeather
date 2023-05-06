@@ -33,7 +33,7 @@ class OpenWeather(var listener: Updatable?) {
             ) {
                 Log.d(TAG,response.code().toString())
                 if (response.code() == 200) {
-                    if (response.body()!=null)  listener?.insertCity(response.body()!!)
+                    if (response.body()!=null)  listener?.showFoundCities(response.body()!!)
                 }
             }
 

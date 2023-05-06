@@ -10,12 +10,12 @@ import com.kotlinweather.R
 import com.kotlinweather.http.Cities
 import com.kotlinweather.http.CityWeather
 
-class CityAdapter(private val data: MutableMap<Cities, CityWeather?>) :
+class CityAdapter(private val data: MutableMap<Cities, CityWeather?>,val listener:OnCityClick) :
     RecyclerView.Adapter<CityViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.city_item, parent, false)
-        return CityViewHolder(itemView)
+        return CityViewHolder(itemView,listener)
     }
 
     override fun onBindViewHolder(holder: CityViewHolder, position: Int) {
@@ -25,15 +25,21 @@ class CityAdapter(private val data: MutableMap<Cities, CityWeather?>) :
     override fun getItemCount(): Int = data.size
 }
 
-class CityViewHolder(item: View) : ViewHolder(item) {
+class CityViewHolder(item: View, val listener:OnCityClick) : ViewHolder(item) {
     private val txtCityName: TextView = item.findViewById(R.id.txt_city_name)
     private val txtCountry: TextView = item.findViewById(R.id.txt_secondary_info)
     private val txtLat: TextView = item.findViewById(R.id.txt_support_info)
+
 
     fun bind(city: Cities) {
         txtCityName.text = city.name
         txtCountry.text = city.country
         txtLat.text="${city.lat}  |  ${city.lon}"
+
+
+        itemView.setOnClickListener {
+            this.listener.onFoundCityClick(city)
+        }
     }
 
 }

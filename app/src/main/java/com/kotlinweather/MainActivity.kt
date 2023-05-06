@@ -15,12 +15,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.kotlinweather.http.Cities
 import com.kotlinweather.http.CityWeather
+import com.kotlinweather.http.OpenWeather
 import com.kotlinweather.http.Updatable
 
 class MainActivity : AppCompatActivity(),Updatable {
     // Global variables
     private var lblSearchCity:TextInputLayout? = null
     private var txtSearchCity:EditText? = null
+
+    private val weather = OpenWeather(this)
+    private val cityData = mutableMapOf<Cities,CityWeather?>()
 
     // Functions
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,13 +46,17 @@ class MainActivity : AppCompatActivity(),Updatable {
 
     }
 
-
     private fun setBehaviour(){
         txtSearchCity?.setOnEditorActionListener { v, actionId, event ->
             if(actionId==EditorInfo.IME_ACTION_DONE){
+                // Hide keyBoard
                 val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-                showMessage(txtSearchCity?.text.toString())
+
+                // Search location by city name
+                this.weather.getLocations(txtSearchCity?.text.toString())
+
+                //showMessage(txtSearchCity?.text.toString())
             }
             true
         }

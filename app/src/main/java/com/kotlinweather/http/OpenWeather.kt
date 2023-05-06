@@ -25,20 +25,22 @@ class OpenWeather(var listener: Updatable?) {
     }
 
     fun getLocations(cityName: String) {
-        val call = openWeather.getCitiesLocation(cityName, appKey)
+        val call = openWeather.getCitiesLocation(cityName, appKey,10)
         call.enqueue(object : Callback<List<Cities>> {
             override fun onResponse(
                 call: Call<List<Cities>>,
                 response: Response<List<Cities>>
             ) {
-                //Log.d(TAG,response.code().toString())
+                Log.d(TAG,response.code().toString())
                 if (response.code() == 200) {
                     val citiesLocations = mutableListOf<Cities>()
                     if (!response.body().isNullOrEmpty()) {
                         response.body()?.forEach {
+                            Log.d(TAG,"${it.name} ${it.country} ${it.lon}   ${it.lon}")
                             citiesLocations.add(it)
                         }
-                        listener?.insertCity(citiesLocations)
+
+                        //listener?.insertCity(citiesLocations)
                     }
                 }
             }

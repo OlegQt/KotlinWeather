@@ -8,7 +8,8 @@ interface OpenWeatherApi {
     @GET("/geo/1.0/direct")
     fun getCitiesLocation(
         @Query("q") cityName: String,
-        @Query("appid") appKey: String
+        @Query("appid") appKey: String,
+        @Query("limit") num: Int
     ): Call<List<Cities>>
 
     @GET("/data/2.5/weather")

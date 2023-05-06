@@ -27,18 +27,16 @@ class MainActivity : AppCompatActivity(), Updatable {
 
     private val weather = OpenWeather(this)
     private val cityData = mutableMapOf<Cities, CityWeather?>()
-    //private val searchAdapter = CityAdapter(cityData)
+    private val foundCities = mutableMapOf<Cities, CityWeather?>()
 
-    private lateinit var listener:OnCityClick
+    private lateinit var cityAdapter: CityAdapter
+    private lateinit var listener: OnCityClick
 
 
     // Functions
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_main)
-        deployUi()
-        setBehaviour()
+    private fun insertCity(city:Cities){
+        if(this.cityData.contains(city)) showMessage("${city.name} already exists!")
+        else cityData[city] = null
     }
 
     private fun deployUi() {
@@ -48,7 +46,6 @@ class MainActivity : AppCompatActivity(), Updatable {
         rclSearchCity = findViewById(R.id.recycler_city_search)
         val layOut = LinearLayoutManager(this)
         layOut.orientation = RecyclerView.VERTICAL
-        //rclSearchCity?.adapter = this.searchAdapter
         rclSearchCity?.layoutManager = layOut
     }
 
@@ -62,8 +59,6 @@ class MainActivity : AppCompatActivity(), Updatable {
 
                 // Search location by city name
                 this.weather.getLocations(txtSearchCity?.text.toString())
-
-                //showMessage(txtSearchCity?.text.toString())
             }
             true
         }
@@ -75,6 +70,9 @@ class MainActivity : AppCompatActivity(), Updatable {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 lblSearchCity?.error = ""
+                if (s.isNullOrEmpty()) {
+                    rclSearchCity?.adapter = cityAdapter
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -83,13 +81,23 @@ class MainActivity : AppCompatActivity(), Updatable {
 
         })
 
-        listener = object :OnCityClick{
+        listener = object : OnCityClick {
             override fun onFoundCityClick(city: Cities) {
-                showMessage(city.name)
+                //showMessage(city.name)
+                insertCity(city)
             }
-
         }
 
+        this.cityAdapter = CityAdapter(cityData,listener)
+
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContentView(R.layout.activity_main)
+        deployUi()
+        setBehaviour()
     }
 
     override fun showFoundCities(cityLocation: List<Cities>) {
@@ -98,7 +106,7 @@ class MainActivity : AppCompatActivity(), Updatable {
         } else {
             val foundCities = mutableMapOf<Cities, CityWeather?>()
 
-            val adapter = CityAdapter(foundCities,listener)
+            val adapter = CityAdapter(foundCities, listener)
             this.rclSearchCity?.adapter = adapter
             cityLocation.forEach {
                 foundCities[it] = null
@@ -111,6 +119,7 @@ class MainActivity : AppCompatActivity(), Updatable {
     override fun showMessage(msg: String) {
         //TODO("Not yet implemented")
         Snackbar.make(lblSearchCity!!, msg, Snackbar.LENGTH_INDEFINITE)
+            .setAction("Ok",{})
             .show()
     }
 

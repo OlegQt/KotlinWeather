@@ -1,8 +1,10 @@
 package com.kotlinweather.presentation
 
-import com.kotlinweather.http.Cities
+import com.kotlinweather.http.CityInfo
+import java.text.FieldPosition
 
 interface OnCityClick {
     val type:Int
-    fun onFoundCityClick(city:Cities)
+    fun onCityItemClick(city:CityInfo){}
+    fun onCheckCity(city:CityInfo){}
 }

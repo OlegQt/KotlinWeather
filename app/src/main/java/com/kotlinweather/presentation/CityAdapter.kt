@@ -4,10 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kotlinweather.R
-import com.kotlinweather.http.Cities
+import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.CityWeather
 
-class CityAdapter(private val data: MutableMap<Cities, CityWeather?>,val listener:OnCityClick) :
+class CityAdapter(private val data: MutableMap<CityInfo, CityWeather?>, val listener:OnCityClick) :
     RecyclerView.Adapter<CityViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityViewHolder {
         val itemView = LayoutInflater.from(parent.context)

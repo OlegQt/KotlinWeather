@@ -26,10 +26,10 @@ class OpenWeather(var listener: Updatable?) {
 
     fun getLocations(cityName: String) {
         val call = openWeather.getCitiesLocation(cityName, appKey,10)
-        call.enqueue(object : Callback<List<Cities>> {
+        call.enqueue(object : Callback<List<CityInfo>> {
             override fun onResponse(
-                call: Call<List<Cities>>,
-                response: Response<List<Cities>>
+                call: Call<List<CityInfo>>,
+                response: Response<List<CityInfo>>
             ) {
                 Log.d(TAG,response.code().toString())
                 if (response.code() == 200) {
@@ -37,14 +37,14 @@ class OpenWeather(var listener: Updatable?) {
                 }
             }
 
-            override fun onFailure(call: Call<List<Cities>>, t: Throwable) {
+            override fun onFailure(call: Call<List<CityInfo>>, t: Throwable) {
                 Log.d(TAG, "fail")
             }
 
         })
     }
 
-    fun getWeather(city:Cities) {
+    fun getWeather(city:CityInfo) {
         val call = openWeather.getWeather(city.lat, city.lon, appKey, "metric")
         call.enqueue(object : Callback<CityWeather> {
             override fun onResponse(call: Call<CityWeather>, response: Response<CityWeather>) {

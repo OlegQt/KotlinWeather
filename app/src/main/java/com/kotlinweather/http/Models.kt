@@ -7,7 +7,7 @@ data class City(
     val lon: Double
 )
 
-data class Cities(
+data class CityInfo(
     val name: String,
     val lat: Double,
     val lon: Double,

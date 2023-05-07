@@ -11,13 +11,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
-import com.kotlinweather.http.Cities
+import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.CityWeather
 import com.kotlinweather.http.OpenWeather
 import com.kotlinweather.http.Updatable
@@ -32,17 +31,18 @@ class MainActivity : AppCompatActivity(), Updatable {
     private var rclSearchCity: RecyclerView? = null
     private var layOutAction: LinearLayout? = null
     private var btnWeatherUpdate: Button? = null
+    private var btnTest: Button? = null
 
 
     private val weather = OpenWeather(this)
-    private val cityData = mutableMapOf<Cities, CityWeather?>()
+    private val cityData = mutableMapOf<CityInfo, CityWeather?>()
 
     private lateinit var cityAdapter: CityAdapter
 
 
 
     // Functions
-    private fun insertCity(city:Cities){
+    private fun insertCity(city:CityInfo){
         if(this.cityData.contains(city)) showMessage("${city.name} already exists!")
         else {
             cityData[city] = null
@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), Updatable {
         layOutAction = findViewById(R.id.lout_action)
         rclSearchCity = findViewById(R.id.recycler_city_search)
         btnWeatherUpdate = findViewById(R.id.btn_update_weather)
+        btnTest = findViewById(R.id.btn_test)
 
         val layOut = LinearLayoutManager(this)
         layOut.orientation = RecyclerView.VERTICAL
@@ -111,6 +112,11 @@ class MainActivity : AppCompatActivity(), Updatable {
                 }
             }
         }
+
+        btnTest?.setOnClickListener {
+            showMessage("Test")
+
+        }
     }
 
     private fun showCityRecycler(visibility:Boolean){
@@ -132,7 +138,7 @@ class MainActivity : AppCompatActivity(), Updatable {
 
         val str =  WeatherApp.sharedPreferences.getString(WeatherApp.APP_PREFERENCES_CITIES,"something")
         if (!str.equals("something")){
-            val data = Gson().fromJson(str,Array<Cities>::class.java)
+            val data = Gson().fromJson(str,Array<CityInfo>::class.java)
             if(data.isNotEmpty()){
                 cityData.clear()
                 data.forEach {
@@ -145,32 +151,34 @@ class MainActivity : AppCompatActivity(), Updatable {
         // В идеале надо загрузить данные из SharedPrefs
         val listener2 = object :OnCityClick{
             override val type: Int=0
-            override fun onFoundCityClick(city: Cities) {
-                showMessage("Основной адаптер ${city.name}")
+
+            override fun onCheckCity(city: CityInfo) {
+                super.onCheckCity(city)
+                showMessage("item ${city.name} is checked")
             }
         }
         this.cityAdapter = CityAdapter(cityData,listener2)
         showCityRecycler(true)
     }
 
-    override fun showFoundCities(cityLocation: List<Cities>) {
+    override fun showFoundCities(cityLocation: List<CityInfo>) {
         if (cityLocation.isEmpty()) {
             this.lblSearchCity?.error = "City doesn't exists"
         } else {
-            val foundCities = mutableMapOf<Cities, CityWeather?>()
+            val foundCityInfo = mutableMapOf<CityInfo, CityWeather?>()
             val listener = object : OnCityClick {
                 override val type:Int = 1
-                override fun onFoundCityClick(city: Cities) {
+                override fun onCityItemClick(city: CityInfo) {
                     //showMessage(city.name)
                     insertCity(city)
                 }
             }
 
-            val adapter = CityAdapter(foundCities, listener)
+            val adapter = CityAdapter(foundCityInfo, listener)
             this.rclSearchCity?.adapter = adapter
             cityLocation.forEach {
-                foundCities[it] = null
-                adapter.notifyItemInserted(foundCities.size)
+                foundCityInfo[it] = null
+                adapter.notifyItemInserted(foundCityInfo.size)
             }
         }
 
@@ -183,17 +191,10 @@ class MainActivity : AppCompatActivity(), Updatable {
             .show()
     }
 
-    override fun updateCityCurrentWeather(weather: CityWeather, city: Cities) {
-        val xT = weather.main.temp
+    override fun updateCityCurrentWeather(weather: CityWeather, city: CityInfo) {
         cityData[city] = weather
         val i = cityData.keys.indexOf(city)
         cityAdapter.notifyItemChanged(i)
-        rclSearchCity?.invalidate()
 
-        if(i==2){
-            var str=city.name
-            str=str.plus("")
-        }
-        //cityAdapter.notifyDataSetChanged()
     }
 }

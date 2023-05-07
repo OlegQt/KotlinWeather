@@ -114,7 +114,6 @@ class MainActivity : AppCompatActivity(), Updatable {
         else layOutAction?.visibility = View.GONE
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -165,7 +164,8 @@ class MainActivity : AppCompatActivity(), Updatable {
 
     override fun updateCityCurrentWeather(weather: CityWeather, city: Cities) {
         val xT = weather.main.temp
-        cityData.put(city,weather)
-        cityAdapter.notifyDataSetChanged()
+        cityData[city] = weather
+        val i = cityData.keys.indexOf(city)
+        cityAdapter.notifyItemChanged(i)
     }
 }

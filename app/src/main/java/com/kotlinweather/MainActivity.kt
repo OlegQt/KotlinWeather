@@ -188,5 +188,12 @@ class MainActivity : AppCompatActivity(), Updatable {
         cityData[city] = weather
         val i = cityData.keys.indexOf(city)
         cityAdapter.notifyItemChanged(i)
+        rclSearchCity?.invalidate()
+
+        if(i==2){
+            var str=city.name
+            str=str.plus("")
+        }
+        //cityAdapter.notifyDataSetChanged()
     }
 }

@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">KotlinWeather</string>
-    <string name="btn_add_city">ADD</string>
+    <string name="btn_update_weather">Update</string>
     <string name="lbl_search_city">City name</string>
 </resources>

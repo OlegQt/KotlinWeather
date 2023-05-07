@@ -1,11 +1,8 @@
 package com.kotlinweather.presentation
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.kotlinweather.R
 import com.kotlinweather.http.Cities
 import com.kotlinweather.http.CityWeather
@@ -19,7 +16,7 @@ class CityAdapter(private val data: MutableMap<Cities, CityWeather?>,val listene
     }
 
     override fun onBindViewHolder(holder: CityViewHolder, position: Int) {
-        holder.bind(data.keys.elementAt(position))
+        holder.bind(data.keys.elementAt(position),data.values.elementAt(position))
     }
 
     override fun getItemCount(): Int = data.size

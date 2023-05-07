@@ -4,10 +4,14 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -24,6 +28,9 @@ class MainActivity : AppCompatActivity(), Updatable {
     private var lblSearchCity: TextInputLayout? = null
     private var txtSearchCity: EditText? = null
     private var rclSearchCity: RecyclerView? = null
+    private var layOutAction: LinearLayout? = null
+    private var btnWeatherUpdate: Button? = null
+
 
     private val weather = OpenWeather(this)
     private val cityData = mutableMapOf<Cities, CityWeather?>()
@@ -41,20 +48,28 @@ class MainActivity : AppCompatActivity(), Updatable {
     private fun deployUi() {
         lblSearchCity = findViewById(R.id.lbl_search_city)
         txtSearchCity = findViewById(R.id.txt_search_city)
-
+        layOutAction = findViewById(R.id.lout_action)
         rclSearchCity = findViewById(R.id.recycler_city_search)
+        btnWeatherUpdate = findViewById(R.id.btn_update_weather)
+
         val layOut = LinearLayoutManager(this)
         layOut.orientation = RecyclerView.VERTICAL
         rclSearchCity?.layoutManager = layOut
+
+        showCityRecycler(true)
     }
 
     private fun setBehaviour() {
+
         txtSearchCity?.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 // Hide keyBoard
                 val inputManager =
                     getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+
+                // Hide main CityRecycler
+                this.showCityRecycler(false)
 
                 // Search location by city name
                 this.weather.getLocations(txtSearchCity?.text.toString())
@@ -70,7 +85,8 @@ class MainActivity : AppCompatActivity(), Updatable {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 lblSearchCity?.error = ""
                 if (s.isNullOrEmpty()) {
-                    rclSearchCity?.adapter = cityAdapter
+                    //rclSearchCity?.adapter = cityAdapter
+                    showCityRecycler(true)
                 }
             }
 
@@ -79,7 +95,25 @@ class MainActivity : AppCompatActivity(), Updatable {
             }
 
         })
+
+        btnWeatherUpdate?.setOnClickListener {
+            if (cityData.isNotEmpty()){
+                cityData.forEach{
+                    weather.getWeather(it.key)
+                }
+            }
+        }
     }
+
+    private fun showCityRecycler(visibility:Boolean){
+
+        if (visibility and cityData.isNotEmpty()) {
+            rclSearchCity?.adapter = cityAdapter
+            layOutAction?.visibility = View.VISIBLE
+        }
+        else layOutAction?.visibility = View.GONE
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,7 +163,9 @@ class MainActivity : AppCompatActivity(), Updatable {
             .show()
     }
 
-    override fun updateCityCurrentWeather(weather: CityWeather, cityName: String) {
-        //TODO("Not yet implemented")
+    override fun updateCityCurrentWeather(weather: CityWeather, city: Cities) {
+        val xT = weather.main.temp
+        cityData.put(city,weather)
+        cityAdapter.notifyDataSetChanged()
     }
 }

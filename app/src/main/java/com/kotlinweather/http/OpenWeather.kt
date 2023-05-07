@@ -44,12 +44,12 @@ class OpenWeather(var listener: Updatable?) {
         })
     }
 
-    fun getWeather(lat: Double, lon: Double,cityName: String) {
-        val call = openWeather.getWeather(lat, lon, appKey, "metric")
+    fun getWeather(city:Cities) {
+        val call = openWeather.getWeather(city.lat, city.lon, appKey, "metric")
         call.enqueue(object : Callback<CityWeather> {
             override fun onResponse(call: Call<CityWeather>, response: Response<CityWeather>) {
                 if (response.body() != null) {
-                    listener?.updateCityCurrentWeather(response.body()!!,cityName)
+                    listener?.updateCityCurrentWeather(response.body()!!,city)
                 }
             }
 

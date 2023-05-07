@@ -16,12 +16,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import com.kotlinweather.http.Cities
 import com.kotlinweather.http.CityWeather
 import com.kotlinweather.http.OpenWeather
 import com.kotlinweather.http.Updatable
 import com.kotlinweather.presentation.CityAdapter
 import com.kotlinweather.presentation.OnCityClick
+import com.kotlinweather.sharedprefs.WeatherApp
 
 class MainActivity : AppCompatActivity(), Updatable {
     // Global variables
@@ -42,7 +44,13 @@ class MainActivity : AppCompatActivity(), Updatable {
     // Functions
     private fun insertCity(city:Cities){
         if(this.cityData.contains(city)) showMessage("${city.name} already exists!")
-        else cityData[city] = null
+        else {
+            cityData[city] = null
+
+            val citiesList = cityData.keys.toList()
+            val jsonCitiesList = Gson().toJson(citiesList)
+            WeatherApp.sharedPreferences.edit().putString(WeatherApp.APP_PREFERENCES_CITIES,jsonCitiesList).apply()
+        }
     }
 
     private fun deployUi() {
@@ -117,9 +125,21 @@ class MainActivity : AppCompatActivity(), Updatable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         setContentView(R.layout.activity_main)
         deployUi()
         setBehaviour()
+
+        val str =  WeatherApp.sharedPreferences.getString(WeatherApp.APP_PREFERENCES_CITIES,"something")
+        if (!str.equals("something")){
+            val data = Gson().fromJson(str,Array<Cities>::class.java)
+            if(data.isNotEmpty()){
+                cityData.clear()
+                data.forEach {
+                    cityData.put(it,null)
+                }
+            }
+        }
 
         // Инициализируем основной адаптер
         // В идеале надо загрузить данные из SharedPrefs
@@ -130,6 +150,7 @@ class MainActivity : AppCompatActivity(), Updatable {
             }
         }
         this.cityAdapter = CityAdapter(cityData,listener2)
+        showCityRecycler(true)
     }
 
     override fun showFoundCities(cityLocation: List<Cities>) {

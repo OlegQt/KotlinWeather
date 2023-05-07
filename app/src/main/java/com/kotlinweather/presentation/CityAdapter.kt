@@ -25,21 +25,3 @@ class CityAdapter(private val data: MutableMap<Cities, CityWeather?>,val listene
     override fun getItemCount(): Int = data.size
 }
 
-class CityViewHolder(item: View, val listener:OnCityClick) : ViewHolder(item) {
-    private val txtCityName: TextView = item.findViewById(R.id.txt_city_name)
-    private val txtCountry: TextView = item.findViewById(R.id.txt_secondary_info)
-    private val txtLat: TextView = item.findViewById(R.id.txt_support_info)
-
-
-    fun bind(city: Cities) {
-        txtCityName.text = city.name
-        txtCountry.text = city.country
-        txtLat.text="${city.lat}  |  ${city.lon}"
-
-
-        itemView.setOnClickListener {
-            this.listener.onFoundCityClick(city)
-        }
-    }
-
-}

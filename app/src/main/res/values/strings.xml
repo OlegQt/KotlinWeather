@@ -2,4 +2,5 @@
     <string name="app_name">KotlinWeather</string>
     <string name="btn_update_weather">Update</string>
     <string name="lbl_search_city">City name</string>
+    <string name="delete">Delete</string>
 </resources>

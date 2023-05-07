@@ -63,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="4dp"
-            android:text="@string/btn_update_weather"
+            android:text="@string/delete"
             android:textAllCaps="true" />
     </LinearLayout>
 

@@ -52,9 +52,8 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
 
 
         itemView.setOnClickListener {
-            this.listener.onCityItemClick(city)
             this.card.isChecked = !this.card.isChecked
-            if(card.isChecked) listener.onCheckCity(city)
+            listener.onCheckCity(city)
             card.invalidate()
         }
 

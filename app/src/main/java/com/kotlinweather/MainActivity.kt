@@ -36,21 +36,25 @@ class MainActivity : AppCompatActivity(), Updatable {
 
     private val weather = OpenWeather(this)
     private val cityData = mutableMapOf<CityInfo, CityWeather?>()
+    private val setCityToDelete = mutableSetOf<CityInfo>()
 
     private lateinit var cityAdapter: CityAdapter
 
 
-
     // Functions
-    private fun insertCity(city:CityInfo){
-        if(this.cityData.contains(city)) showMessage("${city.name} already exists!")
+    private fun insertCity(city: CityInfo) {
+        if (this.cityData.contains(city)) showMessage("${city.name} already exists!")
         else {
             cityData[city] = null
-
-            val citiesList = cityData.keys.toList()
-            val jsonCitiesList = Gson().toJson(citiesList)
-            WeatherApp.sharedPreferences.edit().putString(WeatherApp.APP_PREFERENCES_CITIES,jsonCitiesList).apply()
+            saveCitiesToPrefs()
         }
+    }
+
+    private fun saveCitiesToPrefs() {
+        val citiesList = cityData.keys.toList()
+        val jsonCitiesList = Gson().toJson(citiesList)
+        WeatherApp.sharedPreferences.edit()
+            .putString(WeatherApp.APP_PREFERENCES_CITIES, jsonCitiesList).apply()
     }
 
     private fun deployUi() {
@@ -106,26 +110,39 @@ class MainActivity : AppCompatActivity(), Updatable {
         })
 
         btnWeatherUpdate?.setOnClickListener {
-            if (cityData.isNotEmpty()){
-                cityData.forEach{
+            if (cityData.isNotEmpty()) {
+                cityData.forEach {
                     weather.getWeather(it.key)
                 }
             }
         }
 
         btnTest?.setOnClickListener {
-            showMessage("Test")
+
+            if (setCityToDelete.isEmpty()) {
+                showMessage("Nothing selected")
+            } else {
+                val iterator = setCityToDelete.iterator()
+                while (iterator.hasNext()) {
+                    val city = iterator.next()
+                    val position = cityData.keys.indexOf(city)
+                    cityData.remove(city)
+                    rclSearchCity?.adapter?.notifyItemRemoved(position)
+                    iterator.remove()
+                }
+                saveCitiesToPrefs()
+            }
+
 
         }
     }
 
-    private fun showCityRecycler(visibility:Boolean){
+    private fun showCityRecycler(visibility: Boolean) {
 
         if (visibility and cityData.isNotEmpty()) {
             rclSearchCity?.adapter = cityAdapter
             layOutAction?.visibility = View.VISIBLE
-        }
-        else layOutAction?.visibility = View.GONE
+        } else layOutAction?.visibility = View.GONE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,28 +153,29 @@ class MainActivity : AppCompatActivity(), Updatable {
         deployUi()
         setBehaviour()
 
-        val str =  WeatherApp.sharedPreferences.getString(WeatherApp.APP_PREFERENCES_CITIES,"something")
-        if (!str.equals("something")){
-            val data = Gson().fromJson(str,Array<CityInfo>::class.java)
-            if(data.isNotEmpty()){
+        val str =
+            WeatherApp.sharedPreferences.getString(WeatherApp.APP_PREFERENCES_CITIES, "something")
+        if (!str.equals("something")) {
+            val data = Gson().fromJson(str, Array<CityInfo>::class.java)
+            if (data.isNotEmpty()) {
                 cityData.clear()
                 data.forEach {
-                    cityData.put(it,null)
+                    cityData.put(it, null)
                 }
             }
         }
 
         // Инициализируем основной адаптер
         // В идеале надо загрузить данные из SharedPrefs
-        val listener2 = object :OnCityClick{
-            override val type: Int=0
+        val listener2 = object : OnCityClick {
+            override val type: Int = 0
 
             override fun onCheckCity(city: CityInfo) {
-                super.onCheckCity(city)
-                showMessage("item ${city.name} is checked")
+                val isInSet = setCityToDelete.add(city)
+                if (!isInSet) setCityToDelete.remove(city)
             }
         }
-        this.cityAdapter = CityAdapter(cityData,listener2)
+        this.cityAdapter = CityAdapter(cityData, listener2)
         showCityRecycler(true)
     }
 
@@ -167,7 +185,7 @@ class MainActivity : AppCompatActivity(), Updatable {
         } else {
             val foundCityInfo = mutableMapOf<CityInfo, CityWeather?>()
             val listener = object : OnCityClick {
-                override val type:Int = 1
+                override val type: Int = 1
                 override fun onCityItemClick(city: CityInfo) {
                     //showMessage(city.name)
                     insertCity(city)
@@ -187,7 +205,7 @@ class MainActivity : AppCompatActivity(), Updatable {
     override fun showMessage(msg: String) {
         //TODO("Not yet implemented")
         Snackbar.make(lblSearchCity!!, msg, Snackbar.LENGTH_INDEFINITE)
-            .setAction("Ok",{})
+            .setAction("Ok", {})
             .show()
     }
 

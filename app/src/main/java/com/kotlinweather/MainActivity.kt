@@ -27,10 +27,9 @@ class MainActivity : AppCompatActivity(), Updatable {
 
     private val weather = OpenWeather(this)
     private val cityData = mutableMapOf<Cities, CityWeather?>()
-    private val foundCities = mutableMapOf<Cities, CityWeather?>()
 
     private lateinit var cityAdapter: CityAdapter
-    private lateinit var listener: OnCityClick
+
 
 
     // Functions
@@ -80,16 +79,6 @@ class MainActivity : AppCompatActivity(), Updatable {
             }
 
         })
-
-        listener = object : OnCityClick {
-            override fun onFoundCityClick(city: Cities) {
-                //showMessage(city.name)
-                insertCity(city)
-            }
-        }
-
-        this.cityAdapter = CityAdapter(cityData,listener)
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,6 +87,16 @@ class MainActivity : AppCompatActivity(), Updatable {
         setContentView(R.layout.activity_main)
         deployUi()
         setBehaviour()
+
+        // Инициализируем основной адаптер
+        // В идеале надо загрузить данные из SharedPrefs
+        val listener2 = object :OnCityClick{
+            override val type: Int=0
+            override fun onFoundCityClick(city: Cities) {
+                showMessage("Основной адаптер ${city.name}")
+            }
+        }
+        this.cityAdapter = CityAdapter(cityData,listener2)
     }
 
     override fun showFoundCities(cityLocation: List<Cities>) {
@@ -105,6 +104,13 @@ class MainActivity : AppCompatActivity(), Updatable {
             this.lblSearchCity?.error = "City doesn't exists"
         } else {
             val foundCities = mutableMapOf<Cities, CityWeather?>()
+            val listener = object : OnCityClick {
+                override val type:Int = 1
+                override fun onFoundCityClick(city: Cities) {
+                    //showMessage(city.name)
+                    insertCity(city)
+                }
+            }
 
             val adapter = CityAdapter(foundCities, listener)
             this.rclSearchCity?.adapter = adapter

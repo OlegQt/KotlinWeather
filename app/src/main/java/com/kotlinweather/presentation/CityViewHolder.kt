@@ -21,13 +21,7 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
 
 
     init {
-        if (listener.type == 0) {
-            //val colorSalmon = ContextCompat.getColor(item.context,R.color.salmon)
-            //card.setCardBackgroundColor(colorSalmon)
-            //card.isCheckable = true
-            //card.checkedIconGravity = MaterialCardView.CHECKED_ICON_GRAVITY_BOTTOM_END
-            //txtCityName.setBackgroundColor(colorSalmon)
-        }
+        card.isCheckable = listener.type == 0
     }
 
     private fun CityInfo.print(): String {
@@ -54,6 +48,7 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
         itemView.setOnClickListener {
             this.card.isChecked = !this.card.isChecked
             listener.onCheckCity(city)
+            listener.onCityItemClick(city)
             card.invalidate()
         }
 

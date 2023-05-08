@@ -9,7 +9,8 @@ interface OpenWeatherApi {
     fun getCitiesLocation(
         @Query("q") cityName: String,
         @Query("appid") appKey: String,
-        @Query("limit") num: Int
+        @Query("limit") num: Int,
+        @Query("lang") language: String
     ): Call<List<CityInfo>>
 
     @GET("/data/2.5/weather")
@@ -18,5 +19,13 @@ interface OpenWeatherApi {
         @Query("lon") lon: Double,
         @Query("appid") appKey: String,
         @Query("units") options: String
+    ): Call<CityWeather>
+
+    @GET("/data/2.5/weather")
+    fun requestWeatherByCityName(
+        @Query("q") cityName: String,
+        @Query("units") options: String,
+        @Query("appid") appKey: String,
+        @Query("lang") language: String
     ): Call<CityWeather>
 }

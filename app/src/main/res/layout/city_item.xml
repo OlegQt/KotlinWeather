@@ -10,72 +10,20 @@
     app:checkedIconTint="?attr/colorOnSecondary"
     android:backgroundTint="?attr/colorSecondary">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <!-- Cities representations -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="4dp">
+        <include layout="@layout/weather_city_info" />
 
-            <!-- Title  -->
-            <TextView
-                android:id="@+id/txt_city_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/app_name"
-                android:textAppearance="?attr/textAppearanceHeadline6" />
-
-            <!-- Secondary text -->
-
-            <TextView
-                android:id="@+id/txt_secondary_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/app_name"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?android:attr/textColorSecondary" />
-
-            <!-- Supported text -->
-
-            <TextView
-                android:id="@+id/txt_support_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/app_name"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?android:attr/textColorSecondary" />
-
-        </LinearLayout>
-
-
-    <!-- CityWeather representation -->
-    <LinearLayout
-        android:id="@+id/layout_weather_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="32dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/txt_city_temperature"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_update_weather"
-            android:textSize="32sp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"/>
+        <!-- CityWeather representation -->
+        <include layout="@layout/weather_temperature" />
 
     </LinearLayout>
+
+
 
 
 </com.google.android.material.card.MaterialCardView>

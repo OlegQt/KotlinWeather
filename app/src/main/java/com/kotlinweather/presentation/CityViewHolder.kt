@@ -7,6 +7,8 @@ import com.google.android.material.card.MaterialCardView
 import com.kotlinweather.R
 import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.CityWeather
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CityViewHolder(item: View, private val listener: OnCityClick) :
     RecyclerView.ViewHolder(item) {
@@ -18,6 +20,8 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
     private val txtCountry: TextView = item.findViewById(R.id.txt_secondary_info)
     private val txtLat: TextView = item.findViewById(R.id.txt_support_info)
     private val txtTemperature: TextView = item.findViewById(R.id.txt_city_temperature)
+    private val txtWeatherDescription: TextView = item.findViewById(R.id.weather_description)
+
 
 
     init {
@@ -30,16 +34,28 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
         return sLat.plus(" | ").plus(sLon)
     }
 
+    private fun CityWeather.printDate(): String {
+        //EEEE dd/MM/yy hh:mm a
+        val sdf = SimpleDateFormat("EEEE hh:mm a", Locale.getDefault())
+        val netDate = Date(this.dt * 1000L)
+        return sdf.format(netDate)
+    }
+
     fun bind(city: CityInfo, weather: CityWeather?) {
         txtCityName.text = city.name
         txtCountry.text = city.country
         txtLat.text = city.print()
+
 
         // Проверяем, если есть информация о погоде
         // Показываем погодный интерфейс
         if (weather != null) {
             txtTemperature.text = weather.main.temp.toString()
                 .plus(" \u2103")
+
+            txtWeatherDescription.text = weather.weather[0].description
+            txtLat.text = weather.printDate()
+
             layOutWeather.visibility = View.VISIBLE
         } else layOutWeather.visibility = View.GONE
 

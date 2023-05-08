@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity(), Updatable {
     private var layOutAction: LinearLayout? = null
     private var btnWeatherUpdate: Button? = null
     private var btnTest: Button? = null
+    private var btnDelete: Button? = null
 
 
     private val weather = OpenWeather(this)
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity(), Updatable {
         rclSearchCity = findViewById(R.id.recycler_city_search)
         btnWeatherUpdate = findViewById(R.id.btn_update_weather)
         btnTest = findViewById(R.id.btn_test)
+        btnDelete = findViewById(R.id.btn_delete)
 
         val layOut = LinearLayoutManager(this)
         layOut.orientation = RecyclerView.VERTICAL
@@ -117,8 +119,7 @@ class MainActivity : AppCompatActivity(), Updatable {
             }
         }
 
-        btnTest?.setOnClickListener {
-
+        btnDelete?.setOnClickListener {
             if (setCityToDelete.isEmpty()) {
                 showMessage("Nothing selected")
             } else {
@@ -132,8 +133,10 @@ class MainActivity : AppCompatActivity(), Updatable {
                 }
                 saveCitiesToPrefs()
             }
+        }
 
-
+        btnTest?.setOnClickListener {
+            weather.requestWeather(CityInfo("moscow",0.0,0.0,"RU"))
         }
     }
 

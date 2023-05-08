@@ -1,11 +1,5 @@
 package com.kotlinweather.http
 
-data class City(
-    val cityName: String,
-    var temperature:Double,
-    val lat: Double,
-    val lon: Double
-)
 
 data class CityInfo(
     val name: String,
@@ -14,10 +8,21 @@ data class CityInfo(
     val country: String,
 )
 data class CityWeather(
+    val name:String,
     val visibility: Int,
-    val main: CurrentWeather
+    val id:Long,
+    val dt:Long,
+    val main: CurrentWeather,
+    val weather: List<Weather>
 ) {
     data class CurrentWeather(
         var temp: Double,
+    )
+
+    data class Weather(
+        val id: Int,
+        val main: String,
+        val description: String,
+        val icon: String
     )
 }

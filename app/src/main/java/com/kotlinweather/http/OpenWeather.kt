@@ -6,6 +6,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class OpenWeather(var listener: Updatable?) {
     private val baseUrl = "https://api.openweathermap.org/"
@@ -25,7 +27,7 @@ class OpenWeather(var listener: Updatable?) {
     }
 
     fun getLocations(cityName: String) {
-        val call = openWeather.getCitiesLocation(cityName, appKey,10)
+        val call = openWeather.getCitiesLocation(cityName, appKey,10,"ru")
         call.enqueue(object : Callback<List<CityInfo>> {
             override fun onResponse(
                 call: Call<List<CityInfo>>,
@@ -59,4 +61,23 @@ class OpenWeather(var listener: Updatable?) {
         })
     }
 
+    fun requestWeather(cityInfo: CityInfo){
+        val call = openWeather.requestWeatherByCityName(cityInfo.name,"metric",appKey,"ru")
+        call.enqueue(object :Callback<CityWeather>{
+            override fun onResponse(call: Call<CityWeather>, response: Response<CityWeather>) {
+                Log.d(TAG,"${response.code()}")
+                val pW:CityWeather?= response.body()
+                var temp = pW?.main?.temp
+                Log.d(TAG,"${response.code()}")
+                if (pW!=null) {
+                    val t = pW.weather
+                }
+            }
+
+            override fun onFailure(call: Call<CityWeather>, t: Throwable) {
+                //
+            }
+
+        })
+    }
 }

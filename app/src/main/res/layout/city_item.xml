@@ -5,46 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
+    android:backgroundTint="?attr/colorSecondary"
     android:checkable="true"
-    app:checkedIconGravity="BOTTOM_END"
+    app:checkedIconGravity="TOP_END"
     app:checkedIconTint="?attr/colorOnSecondary"
-    android:backgroundTint="?attr/colorSecondary">
+    app:cardCornerRadius="12dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <!-- Cities representations -->
-            <include layout="@layout/weather_city_info" />
+        <!-- Cities representations -->
+        <include layout="@layout/city_info" />
 
-            <!-- CityWeather representation -->
-            <include layout="@layout/weather_temperature" />
-
-        </LinearLayout>
-
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_expand_cardview"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            />
+        <!-- CityWeather representation -->
+        <include layout="@layout/city_weather" />
 
     </LinearLayout>
-
-
-
-
-
-
 
 
 </com.google.android.material.card.MaterialCardView>

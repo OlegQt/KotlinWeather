@@ -1,6 +1,8 @@
 package com.kotlinweather.presentation
 
 import android.view.View
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -12,20 +14,26 @@ import java.util.*
 
 class CityViewHolder(item: View, private val listener: OnCityClick) :
     RecyclerView.ViewHolder(item) {
-    private val layOutWeather: View = item.findViewById(R.id.layout_weather_info)
-
-
     private val card: MaterialCardView = item.findViewById(R.id.card)
-    private val txtCityName: TextView = item.findViewById(R.id.txt_city_name)
-    private val txtCountry: TextView = item.findViewById(R.id.txt_secondary_info)
-    private val txtLat: TextView = item.findViewById(R.id.txt_support_info)
-    private val txtTemperature: TextView = item.findViewById(R.id.txt_city_temperature)
-    private val txtWeatherDescription: TextView = item.findViewById(R.id.weather_description)
 
+    private val txtCityName: TextView = item.findViewById(R.id.txt_city_name)
+    private val txtTemperature: TextView = item.findViewById(R.id.txt_city_temperature_main)
+
+    private val btnExpand: Button = item.findViewById(R.id.btn_expand)
+
+    private val layOutCityWeather: LinearLayout = item.findViewById(R.id.layout_city_weather)
 
 
     init {
-        card.isCheckable = listener.type == 0
+        if(listener.type==1){
+            card.isCheckable = false
+            layOutCityWeather.visibility = View.GONE
+        }
+        else
+        {
+            card.isCheckable = true
+            layOutCityWeather.visibility = View.VISIBLE
+        }
     }
 
     private fun CityInfo.print(): String {
@@ -41,25 +49,22 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
         return sdf.format(netDate)
     }
 
+    private fun expand(){
+
+    }
+
     fun bind(city: CityInfo, weather: CityWeather?) {
         txtCityName.text = city.name
-        txtCountry.text = city.country
-        txtLat.text = city.print()
-
 
         // Проверяем, если есть информация о погоде
         // Показываем погодный интерфейс
         if (weather != null) {
             txtTemperature.text = weather.main.temp.toString()
                 .plus(" \u2103")
-
-            txtWeatherDescription.text = weather.weather[0].description
-            txtLat.text = weather.printDate()
-
-            layOutWeather.visibility = View.VISIBLE
-        } else layOutWeather.visibility = View.GONE
-
-
+        }
+        else{
+            txtTemperature.text=""
+        }
 
         itemView.setOnClickListener {
             this.card.isChecked = !this.card.isChecked
@@ -67,8 +72,6 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
             listener.onCityItemClick(city)
             card.invalidate()
         }
-
-
     }
 
 }

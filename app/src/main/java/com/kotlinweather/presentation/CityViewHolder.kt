@@ -6,9 +6,11 @@ import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.kotlinweather.R
 import com.kotlinweather.http.CityInfo
@@ -23,8 +25,12 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
 
     private val txtCityName: TextView = item.findViewById(R.id.txt_city_name)
     private val txtTemperature: TextView = item.findViewById(R.id.txt_city_temperature_main)
+    private val txtTempDescription: TextView = item.findViewById(R.id.txt_weather_description)
+
 
     private val btnExpand: Button = item.findViewById(R.id.btn_expand)
+    private val imgWeather: ImageView = item.findViewById(R.id.img_weather)
+
 
     private val layOutCityWeather: LinearLayout = item.findViewById(R.id.layout_city_weather)
     private val layOutHiddenInfo: LinearLayout = item.findViewById(R.id.hidden_weather_info)
@@ -34,6 +40,7 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
 
 
     init {
+        layOutHiddenInfo.visibility = View.GONE
         if(listener.type==1){
             card.isCheckable = false
             layOutCityWeather.visibility = View.GONE
@@ -79,6 +86,14 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
         if (weather != null) {
             txtTemperature.text = weather.main.temp.toString()
                 .plus(" \u2103")
+
+            txtTempDescription.text=weather.weather[0].description
+
+            val imageStr = "https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png"
+            Glide.with(this.itemView)
+                .load(imageStr)
+                .centerCrop()
+                .into(imgWeather);
         }
         else{
             txtTemperature.text=""

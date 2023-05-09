@@ -43,6 +43,14 @@ class MainActivity : AppCompatActivity(), Updatable {
 
 
     // Functions
+    private fun updateWeatherForAll(){
+        if (cityData.isNotEmpty()) {
+            cityData.forEach {
+                weather.getWeather(it.key)
+            }
+        }
+    }
+
     private fun insertCity(city: CityInfo) {
         if (this.cityData.contains(city)) showMessage("${city.name} already exists!")
         else {
@@ -112,11 +120,7 @@ class MainActivity : AppCompatActivity(), Updatable {
         })
 
         btnWeatherUpdate?.setOnClickListener {
-            if (cityData.isNotEmpty()) {
-                cityData.forEach {
-                    weather.getWeather(it.key)
-                }
-            }
+            updateWeatherForAll()
         }
 
         btnDelete?.setOnClickListener {
@@ -163,16 +167,14 @@ class MainActivity : AppCompatActivity(), Updatable {
             if (data.isNotEmpty()) {
                 cityData.clear()
                 data.forEach {
-                    cityData.put(it, null)
+                    cityData[it] = null
                 }
             }
         }
 
         // Инициализируем основной адаптер
-        // В идеале надо загрузить данные из SharedPrefs
         val listener2 = object : OnCityClick {
             override val type: Int = 0
-
             override fun onCheckCity(city: CityInfo) {
                 val isInSet = setCityToDelete.add(city)
                 if (!isInSet) setCityToDelete.remove(city)
@@ -180,6 +182,8 @@ class MainActivity : AppCompatActivity(), Updatable {
         }
         this.cityAdapter = CityAdapter(cityData, listener2)
         showCityRecycler(true)
+
+        updateWeatherForAll()
     }
 
     override fun showFoundCities(cityLocation: List<CityInfo>) {
@@ -216,6 +220,5 @@ class MainActivity : AppCompatActivity(), Updatable {
         cityData[city] = weather
         val i = cityData.keys.indexOf(city)
         cityAdapter.notifyItemChanged(i)
-
     }
 }

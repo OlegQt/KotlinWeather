@@ -1,6 +1,10 @@
 package com.kotlinweather.presentation
 
+import android.transition.Scene
+import android.transition.Transition
+import android.transition.TransitionManager
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -11,6 +15,7 @@ import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.CityWeather
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.exp
 
 class CityViewHolder(item: View, private val listener: OnCityClick) :
     RecyclerView.ViewHolder(item) {
@@ -22,6 +27,10 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
     private val btnExpand: Button = item.findViewById(R.id.btn_expand)
 
     private val layOutCityWeather: LinearLayout = item.findViewById(R.id.layout_city_weather)
+    private val layOutHiddenInfo: LinearLayout = item.findViewById(R.id.hidden_weather_info)
+
+    private var isExpanded = false
+
 
 
     init {
@@ -50,7 +59,16 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
     }
 
     private fun expand(){
-
+        if (isExpanded){
+            this.layOutHiddenInfo.visibility = View.GONE
+            btnExpand.text = "Expand"
+            isExpanded = false
+        }
+        else{
+            this.layOutHiddenInfo.visibility = View.VISIBLE
+            btnExpand.text = "Collapse"
+            isExpanded = true
+        }
     }
 
     fun bind(city: CityInfo, weather: CityWeather?) {
@@ -71,6 +89,10 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
             listener.onCheckCity(city)
             listener.onCityItemClick(city)
             card.invalidate()
+        }
+
+        btnExpand.setOnClickListener{
+            expand()
         }
     }
 

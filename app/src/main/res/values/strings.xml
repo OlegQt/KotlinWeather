@@ -4,4 +4,5 @@
     <string name="lbl_search_city">City name</string>
     <string name="delete">Delete</string>
     <string name="btn_expand_card_view">Expand</string>
+    <string name="weather_icon">weather_icon</string>
 </resources>

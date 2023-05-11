@@ -1,13 +1,12 @@
 package com.kotlinweather.presentation
 
-import android.transition.Scene
-import android.transition.Transition
-import android.transition.TransitionManager
+import android.transition.*
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -32,7 +31,7 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
     private val imgWeather: ImageView = item.findViewById(R.id.img_weather)
 
 
-    private val layOutCityWeather: LinearLayout = item.findViewById(R.id.layout_city_weather)
+    private val layOutCityExpand: RelativeLayout = item.findViewById(R.id.expandable_layout)
     private val layOutHiddenInfo: LinearLayout = item.findViewById(R.id.hidden_weather_info)
 
     private var isExpanded = false
@@ -40,15 +39,15 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
 
 
     init {
-        layOutHiddenInfo.visibility = View.GONE
         if(listener.type==1){
             card.isCheckable = false
-            layOutCityWeather.visibility = View.GONE
+            layOutHiddenInfo.visibility = View.GONE
         }
         else
         {
             card.isCheckable = true
-            layOutCityWeather.visibility = View.VISIBLE
+            if (isExpanded) layOutHiddenInfo.visibility = View.VISIBLE
+            else layOutHiddenInfo.visibility = View.GONE
         }
     }
 
@@ -72,6 +71,13 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
             isExpanded = false
         }
         else{
+            TransitionManager.beginDelayedTransition(card, TransitionSet().apply {
+                addTransition(ChangeBounds())
+                addTransition(Fade())
+                duration=500
+            })
+
+
             this.layOutHiddenInfo.visibility = View.VISIBLE
             btnExpand.text = "Collapse"
             isExpanded = true

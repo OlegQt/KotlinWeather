@@ -18,9 +18,14 @@
             android:id="@+id/lbl_search_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
             android:hint="@string/lbl_search_city"
             app:endIconMode="clear_text"
-            app:errorEnabled="true">
+            app:errorEnabled="true"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txt_search_city"
@@ -36,8 +41,8 @@
         android:id="@+id/recycler_city_search"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginEnd="20dp"
         android:layout_weight="1"
+        android:layout_marginHorizontal="8dp"
         tools:listitem="@layout/city_item" />
 
     <com.google.android.material.divider.MaterialDivider

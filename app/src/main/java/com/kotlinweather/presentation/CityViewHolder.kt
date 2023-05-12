@@ -8,9 +8,11 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.snackbar.Snackbar
 import com.kotlinweather.R
 import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.CityWeather
@@ -32,7 +34,7 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
 
 
     private val layOutCityExpand: RelativeLayout = item.findViewById(R.id.expandable_layout)
-    private val layOutHiddenInfo: LinearLayout = item.findViewById(R.id.hidden_weather_info)
+    private val layOutHiddenInfo: RelativeLayout = item.findViewById(R.id.hidden_weather_info)
 
     private var isExpanded = false
 
@@ -42,10 +44,12 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
         if(listener.type==1){
             card.isCheckable = false
             layOutHiddenInfo.visibility = View.GONE
+            layOutCityExpand.visibility = View.GONE
         }
         else
         {
             card.isCheckable = true
+            layOutCityExpand.visibility = View.VISIBLE
             if (isExpanded) layOutHiddenInfo.visibility = View.VISIBLE
             else layOutHiddenInfo.visibility = View.GONE
         }
@@ -62,6 +66,15 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
         val sdf = SimpleDateFormat("EEEE hh:mm a", Locale.getDefault())
         val netDate = Date(this.dt * 1000L)
         return sdf.format(netDate)
+    }
+
+    private fun CityWeather.printTemperatureLine():String{
+        val str:String = String()
+            .plus("Feels like ${this.main.feels_like}")
+            .plus(" \u2103.")
+            .plus(" ${this.weather.first().description}. ")
+            .plus("Wind ${this.wind.speed}")
+        return str
     }
 
     private fun expand(){
@@ -89,32 +102,35 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
 
         // Проверяем, если есть информация о погоде
         // Показываем погодный интерфейс
-        if (weather != null) {
-            txtTemperature.text = weather.main.temp.toString()
-                .plus(" \u2103")
-
-            txtTempDescription.text=weather.weather[0].description
-
-            val imageStr = "https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png"
-            Glide.with(this.itemView)
-                .load(imageStr)
-                .centerCrop()
-                .into(imgWeather);
-        }
-        else{
-            txtTemperature.text=""
-        }
+        if (weather != null) this.bindWeatherInfo(weather)
 
         itemView.setOnClickListener {
             this.card.isChecked = !this.card.isChecked
             listener.onCheckCity(city)
             listener.onCityItemClick(city)
             card.invalidate()
+
         }
 
         btnExpand.setOnClickListener{
             expand()
         }
+    }
+
+    private fun bindWeatherInfo(weather: CityWeather){
+        txtTemperature.text = weather.main.temp.toString()
+            .plus(" \u2103")
+
+        txtTempDescription.text=weather.printTemperatureLine()
+
+        val imageStr = "https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png"
+        Glide.with(this.itemView)
+            .load(imageStr)
+            .centerCrop()
+            .into(imgWeather);
+
+        //val forecast = weather.weather
+        //val tu = forecast[1].description
     }
 
 }

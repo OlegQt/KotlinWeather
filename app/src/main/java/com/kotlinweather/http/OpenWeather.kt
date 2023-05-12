@@ -7,7 +7,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
 class OpenWeather(var listener: Updatable?) {
     private val baseUrl = "https://api.openweathermap.org/"
@@ -27,15 +27,15 @@ class OpenWeather(var listener: Updatable?) {
     }
 
     fun getLocations(cityName: String) {
-        val call = openWeather.getCitiesLocation(cityName, appKey,10,"ru")
+        val call = openWeather.getCitiesLocation(cityName, appKey, 10, "ru")
         call.enqueue(object : Callback<List<CityInfo>> {
             override fun onResponse(
                 call: Call<List<CityInfo>>,
                 response: Response<List<CityInfo>>
             ) {
-                Log.d(TAG,response.code().toString())
+                Log.d(TAG, response.code().toString())
                 if (response.code() == 200) {
-                    if (response.body()!=null)  listener?.showFoundCities(response.body()!!)
+                    if (response.body() != null) listener?.showFoundCities(response.body()!!)
                 }
             }
 
@@ -46,12 +46,12 @@ class OpenWeather(var listener: Updatable?) {
         })
     }
 
-    fun getWeather(city:CityInfo) {
+    fun getWeather(city: CityInfo) {
         val call = openWeather.getWeather(city.lat, city.lon, appKey, "metric")
         call.enqueue(object : Callback<CityWeather> {
             override fun onResponse(call: Call<CityWeather>, response: Response<CityWeather>) {
                 if (response.body() != null) {
-                    listener?.updateCityCurrentWeather(response.body()!!,city)
+                    listener?.updateCityCurrentWeather(response.body()!!, city)
                 }
             }
 
@@ -61,20 +61,50 @@ class OpenWeather(var listener: Updatable?) {
         })
     }
 
-    fun requestWeather(cityInfo: CityInfo){
-        val call = openWeather.requestWeatherByCityName(cityInfo.name,"metric",appKey,"ru")
-        call.enqueue(object :Callback<CityWeather>{
+    fun requestWeather(cityInfo: CityInfo) {
+        val call = openWeather.requestWeatherByCityName(cityInfo.name, "metric", appKey, "ru")
+        call.enqueue(object : Callback<CityWeather> {
             override fun onResponse(call: Call<CityWeather>, response: Response<CityWeather>) {
-                Log.d(TAG,"${response.code()}")
-                val pW:CityWeather?= response.body()
+                Log.d(TAG, "${response.code()}")
+                val pW: CityWeather? = response.body()
                 var temp = pW?.main?.temp
-                Log.d(TAG,"${response.code()}")
-                if (pW!=null) {
+                Log.d(TAG, "${response.code()}")
+                if (pW != null) {
                     val t = pW.weather
                 }
             }
 
             override fun onFailure(call: Call<CityWeather>, t: Throwable) {
+                //
+            }
+
+        })
+    }
+
+    fun requestForecast(city: CityInfo) {
+        val call = openWeather.requestWeatherForecast(city.lat, city.lon, appKey, "metric")
+        call.enqueue(object : Callback<CityForecast> {
+            override fun onResponse(call: Call<CityForecast>, response: Response<CityForecast>) {
+                Log.d(TAG, response.code().toString())
+                if (response.code() == 200) {
+                    val lst = response?.body()
+                    val str = StringBuilder()
+
+                    val sdf = SimpleDateFormat("EEEE hh:mm a", Locale.getDefault())
+                    //val netDate = Date( * 1000L)
+                    //return sdf.format(netDate)
+
+                    lst?.list?.forEach {
+                        val netDate = Date(it.dt * 1000L)
+                        str.append(sdf.format(netDate).toString()).append(" - ")
+                        str.append(it.main.feels_like.toString()).append("\n")
+                    }
+                    //val mn = lst?.city?.name
+                    listener?.showMessage(str.toString())
+                }
+            }
+
+            override fun onFailure(call: Call<CityForecast>, t: Throwable) {
                 //
             }
 

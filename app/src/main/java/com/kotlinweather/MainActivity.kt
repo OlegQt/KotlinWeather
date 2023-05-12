@@ -140,7 +140,8 @@ class MainActivity : AppCompatActivity(), Updatable {
         }
 
         btnTest?.setOnClickListener {
-            weather.requestWeather(CityInfo("moscow",0.0,0.0,"RU"))
+            //weather.requestWeather(CityInfo("moscow",0.0,0.0,"RU"))
+            weather.requestForecast(cityData.keys.first())
         }
     }
 
@@ -213,6 +214,7 @@ class MainActivity : AppCompatActivity(), Updatable {
         //TODO("Not yet implemented")
         Snackbar.make(lblSearchCity!!, msg, Snackbar.LENGTH_INDEFINITE)
             .setAction("Ok", {})
+            .setTextMaxLines(20)
             .show()
     }
 

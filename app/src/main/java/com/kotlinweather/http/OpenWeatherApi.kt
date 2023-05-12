@@ -28,4 +28,13 @@ interface OpenWeatherApi {
         @Query("appid") appKey: String,
         @Query("lang") language: String
     ): Call<CityWeather>
+
+    @GET("/data/2.5/forecast")
+    fun requestWeatherForecast(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("appid") appKey: String,
+        @Query("units") options: String
+    ):Call<CityForecast>
+
 }

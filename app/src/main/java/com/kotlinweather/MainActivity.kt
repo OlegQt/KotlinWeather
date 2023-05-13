@@ -16,10 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
-import com.kotlinweather.http.CityInfo
-import com.kotlinweather.http.CityWeather
-import com.kotlinweather.http.OpenWeather
-import com.kotlinweather.http.Updatable
+import com.kotlinweather.http.*
 import com.kotlinweather.presentation.CityAdapter
 import com.kotlinweather.presentation.OnCityClick
 import com.kotlinweather.sharedprefs.WeatherApp
@@ -47,6 +44,7 @@ class MainActivity : AppCompatActivity(), Updatable {
         if (cityData.isNotEmpty()) {
             cityData.forEach {
                 weather.getWeather(it.key)
+                weather.requestForecast(it.key)
             }
         }
     }
@@ -141,7 +139,7 @@ class MainActivity : AppCompatActivity(), Updatable {
 
         btnTest?.setOnClickListener {
             //weather.requestWeather(CityInfo("moscow",0.0,0.0,"RU"))
-            weather.requestForecast(cityData.keys.first())
+            //weather.requestForecast(cityData.keys.first())
         }
     }
 
@@ -223,4 +221,12 @@ class MainActivity : AppCompatActivity(), Updatable {
         val i = cityData.keys.indexOf(city)
         cityAdapter.notifyItemChanged(i)
     }
+
+    override fun updateCityForecast(forecast: CityForecast, city: CityInfo) {
+        cityData[city]?.main?.forecast = forecast
+        // Update adapter
+        val i = cityData.keys.indexOf(city)
+        cityAdapter.notifyItemChanged(i)
+    }
+
 }

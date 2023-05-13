@@ -21,7 +21,8 @@ data class CityWeather(
         val temp: Double,
         var feels_like: Double,
         val pressure: Double,
-        val humidity: Double
+        val humidity: Double,
+        var forecast: CityForecast
     )
 
     data class Weather(

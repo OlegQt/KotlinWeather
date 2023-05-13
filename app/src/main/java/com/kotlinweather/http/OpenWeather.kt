@@ -100,7 +100,7 @@ class OpenWeather(var listener: Updatable?) {
                         str.append(it.main.feels_like.toString()).append("\n")
                     }
                     //val mn = lst?.city?.name
-                    listener?.showMessage(str.toString())
+                    listener?.updateCityForecast(lst!!,city)
                 }
             }
 

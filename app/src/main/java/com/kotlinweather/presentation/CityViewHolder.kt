@@ -9,13 +9,15 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.kotlinweather.R
-import com.kotlinweather.http.CityInfo
-import com.kotlinweather.http.CityWeather
+import com.kotlinweather.http.*
+import com.kotlinweather.http.forecast_presentation.ForecastAdapter
+import com.kotlinweather.sharedprefs.WeatherApp
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.exp
@@ -36,23 +38,26 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
     private val layOutCityExpand: RelativeLayout = item.findViewById(R.id.expandable_layout)
     private val layOutHiddenInfo: RelativeLayout = item.findViewById(R.id.hidden_weather_info)
 
+    private val rclForecast: RecyclerView = item.findViewById(R.id.rcl_forecast)
+
     private var isExpanded = false
-
-
+    private var forecast = mutableListOf<CityForecast.WeatherListItem>()
+    private val forecastAdapter = ForecastAdapter(forecast)
 
     init {
-        if(listener.type==1){
+        if (listener.type == 1) {
             card.isCheckable = false
             layOutHiddenInfo.visibility = View.GONE
             layOutCityExpand.visibility = View.GONE
-        }
-        else
-        {
+        } else {
             card.isCheckable = true
             layOutCityExpand.visibility = View.VISIBLE
             if (isExpanded) layOutHiddenInfo.visibility = View.VISIBLE
             else layOutHiddenInfo.visibility = View.GONE
         }
+
+        rclForecast.layoutManager = LinearLayoutManager(item.context)
+        rclForecast.adapter = forecastAdapter
     }
 
     private fun CityInfo.print(): String {
@@ -68,8 +73,8 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
         return sdf.format(netDate)
     }
 
-    private fun CityWeather.printTemperatureLine():String{
-        val str:String = String()
+    private fun CityWeather.printTemperatureLine(): String {
+        val str: String = String()
             .plus("Feels like ${this.main.feels_like}")
             .plus(" \u2103.")
             .plus(" ${this.weather.first().description}. ")
@@ -77,17 +82,16 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
         return str
     }
 
-    private fun expand(){
-        if (isExpanded){
+    private fun expand() {
+        if (isExpanded) {
             this.layOutHiddenInfo.visibility = View.GONE
             btnExpand.text = "Expand"
             isExpanded = false
-        }
-        else{
+        } else {
             TransitionManager.beginDelayedTransition(card, TransitionSet().apply {
                 addTransition(ChangeBounds())
                 addTransition(Fade())
-                duration=500
+                duration = 500
             })
 
 
@@ -112,16 +116,27 @@ class CityViewHolder(item: View, private val listener: OnCityClick) :
 
         }
 
-        btnExpand.setOnClickListener{
+        btnExpand.setOnClickListener {
             expand()
         }
     }
 
-    private fun bindWeatherInfo(weather: CityWeather){
+    private fun bindWeatherInfo(weather: CityWeather) {
         txtTemperature.text = weather.main.temp.toString()
             .plus(" \u2103")
 
-        txtTempDescription.text=weather.printTemperatureLine()
+        txtTempDescription.text = weather.printTemperatureLine()
+
+        if(weather.main.forecast!=null) {
+            this.forecast.clear()
+            weather.main.forecast.list.forEach {
+                if(WeatherApp.instance.getDateFromLong("H",it.dt).equals("12")){
+                    this.forecast.add(it)
+                }
+
+            }
+            forecastAdapter.notifyDataSetChanged()
+        }
 
         val imageStr = "https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png"
         Glide.with(this.itemView)

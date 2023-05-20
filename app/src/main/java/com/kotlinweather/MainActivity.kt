@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity(), Updatable {
     private var lblSearchCity: TextInputLayout? = null
     private var txtSearchCity: EditText? = null
     private var rclSearchCity: RecyclerView? = null
-    private var layOutAction: LinearLayout? = null
+    private var layOutAction: RelativeLayout? = null
     private var btnWeatherUpdate: Button? = null
     private var btnTest: Button? = null
     private var btnDelete: Button? = null
@@ -67,7 +68,6 @@ class MainActivity : AppCompatActivity(), Updatable {
     private fun deployUi() {
         lblSearchCity = findViewById(R.id.lbl_search_city)
         txtSearchCity = findViewById(R.id.txt_search_city)
-        layOutAction = findViewById(R.id.lout_action)
         rclSearchCity = findViewById(R.id.recycler_city_search)
         btnWeatherUpdate = findViewById(R.id.btn_update_weather)
         btnTest = findViewById(R.id.btn_test)

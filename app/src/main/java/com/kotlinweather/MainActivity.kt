@@ -1,6 +1,7 @@
 package com.kotlinweather
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -154,6 +155,7 @@ class MainActivity : AppCompatActivity(), Updatable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        startActivity(Intent(this,ActivityNavigation::class.java))
 
         setContentView(R.layout.activity_main)
         deployUi()

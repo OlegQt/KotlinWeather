@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
-class OpenWeather(var listener: Updatable?) {
+class OpenWeather() {
     private val baseUrl = "https://api.openweathermap.org/"
     private val appKey = "ce2b06f255f2307c07504a706c9d920d"
     private val TAG = "OpenWeather"
@@ -26,9 +26,9 @@ class OpenWeather(var listener: Updatable?) {
         return openWeather.getCitiesLocation(cityName, appKey, 10, "ru")
     }
 
-    fun setNewListener(listener: Updatable) {
-        this.listener = listener
-    }
+
+
+
 
     fun getLocations(cityName: String) {
         val call = openWeather.getCitiesLocation(cityName, appKey, 10, "ru")
@@ -39,7 +39,7 @@ class OpenWeather(var listener: Updatable?) {
             ) {
                 Log.d(TAG, response.code().toString())
                 if (response.code() == 200) {
-                    if (response.body() != null) listener?.showFoundCities(response.body()!!)
+                    //if (response.body() != null) listener?.showFoundCities(response.body()!!)
                 }
             }
 
@@ -55,7 +55,7 @@ class OpenWeather(var listener: Updatable?) {
         call.enqueue(object : Callback<CityWeather> {
             override fun onResponse(call: Call<CityWeather>, response: Response<CityWeather>) {
                 if (response.body() != null) {
-                    listener?.updateCityCurrentWeather(response.body()!!, city)
+                    //listener?.updateCityCurrentWeather(response.body()!!, city)
                 }
             }
 
@@ -104,7 +104,7 @@ class OpenWeather(var listener: Updatable?) {
                         str.append(it.main.feels_like.toString()).append("\n")
                     }
                     //val mn = lst?.city?.name
-                    listener?.updateCityForecast(lst!!,city)
+                    //listener?.updateCityForecast(lst!!,city)
                 }
             }
 

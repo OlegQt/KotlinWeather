@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ActivityNavigation">
+    tools:context=".activities.ActivityNavigation">
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/group_search"

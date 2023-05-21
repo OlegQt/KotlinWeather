@@ -1,21 +1,20 @@
-package com.kotlinweather
+package com.kotlinweather.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.snackbar.Snackbar
+import com.kotlinweather.R
 import com.kotlinweather.databinding.ActivityNavigationBinding
 import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.OpenWeather
-import com.kotlinweather.presentation.ScreenMode
+import com.kotlinweather.models.ScreenMode
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,7 +25,7 @@ class ActivityNavigation : AppCompatActivity() {
     private lateinit var searchTextWatcher: TextWatcher
     private lateinit var forecastBadge: BadgeDrawable
 
-    private val weatherApi = OpenWeather(null)
+    private val weatherApi = OpenWeather()
 
     private fun showMsg(textMsg: String) {
         Snackbar.make(

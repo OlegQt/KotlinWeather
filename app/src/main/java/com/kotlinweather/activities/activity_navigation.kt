@@ -8,9 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.snackbar.Snackbar
 import com.kotlinweather.R
+import com.kotlinweather.adapters.AutoCompleteAdapter
+import com.kotlinweather.adapters.OnCardClickListener
 import com.kotlinweather.databinding.ActivityNavigationBinding
 import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.OpenWeather
@@ -34,6 +37,7 @@ class ActivityNavigation : AppCompatActivity() {
             Snackbar.LENGTH_INDEFINITE
         )
             .setAction("ok") {}
+            .setTextMaxLines(20)
             .show()
     }
 
@@ -57,7 +61,20 @@ class ActivityNavigation : AppCompatActivity() {
 
         }
 
-        binding.lblSearchResult.text = "Some txt"
+
+        val data:Set<String> = setOf("A","B","C")
+        val pAdapter = AutoCompleteAdapter(data)
+        pAdapter.listener = object :OnCardClickListener{
+            override fun onCardClick(str: String) {
+                showMsg("Click")
+            }
+
+        }
+        with(binding.rclSearchCities) {
+            layoutManager = LinearLayoutManager(this@ActivityNavigation)
+            adapter=pAdapter
+            itemAnimator = null
+        }
 
     }
 

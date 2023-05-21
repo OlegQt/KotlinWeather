@@ -11,8 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="lbl_search_city,
-        lbl_search_result" />
+        app:constraint_referenced_ids="lbl_search_city
+        ,rcl_search_cities" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/group_forecast"
@@ -38,18 +38,18 @@
             android:id="@+id/txt_search_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionSearch"
             android:inputType="text"
-            android:maxLines="1"
-            android:imeOptions="actionSearch"/>
+            android:maxLines="1" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/lbl_search_result"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcl_search_cities"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        tools:listitem="@layout/v_item"
         app:layout_constraintTop_toBottomOf="@id/lbl_search_city" />
-
 
     <!-- Forecast group -->
     <TextView

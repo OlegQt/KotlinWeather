@@ -22,6 +22,10 @@ class OpenWeather(var listener: Updatable?) {
 
     private val openWeather: OpenWeatherApi = retrofit.create(OpenWeatherApi::class.java)
 
+    fun getCity(cityName: String):Call<kotlin.collections.List<CityInfo>>{
+        return openWeather.getCitiesLocation(cityName, appKey, 10, "ru")
+    }
+
     fun setNewListener(listener: Updatable) {
         this.listener = listener
     }

@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity(), Updatable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        startActivity(Intent(this,ActivityNavigation::class.java))
+        //startActivity(Intent(this,ActivityNavigation::class.java))
 
         setContentView(R.layout.activity_main)
         deployUi()

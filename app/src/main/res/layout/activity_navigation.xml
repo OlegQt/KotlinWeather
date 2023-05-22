@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".activities.ActivityNavigation">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_line_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6"/>
+
     <androidx.constraintlayout.widget.Group
         android:id="@+id/group_search"
         android:layout_width="wrap_content"
@@ -45,9 +52,13 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcl_autocomplete_cities"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
         tools:listitem="@layout/v_item"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guide_line_vertical"
         app:layout_constraintTop_toBottomOf="@id/lbl_search_city" />
 
     <!-- Forecast group -->

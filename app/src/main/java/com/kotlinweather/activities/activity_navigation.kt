@@ -33,7 +33,10 @@ class ActivityNavigation : AppCompatActivity() {
     // и RecyclerView, которые вместе реализуют интерфейс Autocomplete Text Input
     private val listCityNames = mutableSetOf<String>()
     private val listAutocompleteCityNames = mutableListOf<String>()
-    private var autocompleteAdapter = AutoCompleteAdapter(listAutocompleteCityNames)
+    private val autocompleteAdapter = AutoCompleteAdapter(listAutocompleteCityNames)
+
+    // Полный список городов, добавленных на экран прогнозов
+    private val listOfCities:MutableSet<CityInfo> = mutableSetOf()
 
     // Элемент класса доступа к погодному интерфейсу
     private val weatherApi = OpenWeather()
@@ -61,16 +64,22 @@ class ActivityNavigation : AppCompatActivity() {
 
             override fun onTextChanged(charS: CharSequence?, start: Int, before: Int, count: Int) {
                 //TODO("Not yet implemented")
+                binding.rclAutocompleteCities.visibility=View.VISIBLE
                 if (!charS.isNullOrEmpty()) {
                     listAutocompleteCityNames.clear()
                     val str = listCityNames.filterIndexed { index, s ->
                         s.contains(charS,ignoreCase = true)
                     }
+                    if(str.isEmpty()) binding.rclAutocompleteCities.visibility = View.GONE
                     listAutocompleteCityNames.addAll(str)
                     autocompleteAdapter.notifyItemRangeChanged(0,listAutocompleteCityNames.size)
-                    binding.rclAutocompleteCities.visibility = View.VISIBLE
+                    binding.txtSearchCity.setSelection(charS.length)
                 }
-                else binding.rclAutocompleteCities.visibility = View.VISIBLE
+                else {
+                    listAutocompleteCityNames.clear()
+                    listAutocompleteCityNames.addAll(listCityNames)
+                    autocompleteAdapter.notifyItemRangeChanged(0,listAutocompleteCityNames.size)
+                }
 
             }
 
@@ -80,7 +89,8 @@ class ActivityNavigation : AppCompatActivity() {
 
         }
 
-
+        // Устанавливаем и настраиваем поведение RecyclerView
+        // Для отображения подсказки при наборе городов в поисковой строке
         with(binding.rclAutocompleteCities) {
             layoutManager = LinearLayoutManager(this@ActivityNavigation)
             adapter = autocompleteAdapter
@@ -90,7 +100,7 @@ class ActivityNavigation : AppCompatActivity() {
                 // Устанавливаем текс, скрываем клавиатуру и список
                 binding.txtSearchCity.setText(str)
                 binding.rclAutocompleteCities.visibility = View.GONE
-                hideKeyBoard()
+                //hideKeyBoard()
             }
         }
 
@@ -151,7 +161,7 @@ class ActivityNavigation : AppCompatActivity() {
         }
     }
 
-    private fun findCity() {
+    private fun findCityByName() {
         val call = weatherApi.getCity("Moscow")
         call.enqueue(object : Callback<List<CityInfo>> {
             override fun onResponse(
@@ -159,8 +169,10 @@ class ActivityNavigation : AppCompatActivity() {
                 response: Response<List<CityInfo>>
             ) {
                 if (response.code() == 200) {
-                    showMsg("200")
-                    //if (response.body() != null) listener?.showFoundCities(response.body()!!)
+                    if (response.body() != null) {
+                        val city = response.body()?.first()
+                        showMsg(city?.name.toString())
+                    }
                 }
             }
 
@@ -179,7 +191,6 @@ class ActivityNavigation : AppCompatActivity() {
 
         initElements()
         setUiListeners()
-        //findCity()
-
+        findCityByName()
     }
 }

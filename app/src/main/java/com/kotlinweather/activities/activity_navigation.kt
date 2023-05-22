@@ -70,11 +70,14 @@ class ActivityNavigation : AppCompatActivity() {
             }
 
         }
+
         with(binding.rclSearchCities) {
             layoutManager = LinearLayoutManager(this@ActivityNavigation)
             adapter=pAdapter
             itemAnimator = null
+            pAdapter.setListenerBehaviour { str -> showMsg(str) }
         }
+
 
     }
 

@@ -69,6 +69,9 @@ class ActivityNavigation : AppCompatActivity() {
     }
 
     private fun extractAutocompletedCities(charSequence: CharSequence?) {
+        // В любом случае скрываем кнопку с найденным городом
+        // Так как если пользователь начал изменение поля ввода, надо отобразить подсказку
+        binding.btnAddNewCity.visibility = View.GONE
         if (charSequence.isNullOrEmpty()) {
             // Если поисковый запрос пустой, показываем список всех добавленых городов
             listAutocompleteCityNames.clear()

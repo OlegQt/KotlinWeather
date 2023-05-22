@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:visibility="visible"
         app:constraint_referenced_ids="lbl_search_city
-        ,rcl_autocomplete_cities
+
         " />
 
     <androidx.constraintlayout.widget.Group
@@ -75,10 +75,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:cornerRadius="12dp"
-        android:visibility="gone"
+        android:visibility="visible"
         android:text="@string/app_name"
         app:layout_constraintStart_toStartOf="@id/guideline_left_offset"
-        app:layout_constraintTop_toBottomOf="@id/lbl_search_city" />
+        app:layout_constraintTop_toBottomOf="@id/rcl_autocomplete_cities" />
 
     <!-- Forecast group -->
     <TextView

@@ -97,6 +97,20 @@ class ActivityNavigation : AppCompatActivity() {
     private fun initElements() {
         forecastBadge = binding.bottomNavBar.getOrCreateBadge(R.id.page_forecast)
         forecastBadge.isVisible = true
+
+        listCityNames.addAll(
+            setOf(
+                "Moscow",
+                "London",
+                "Berlin",
+                "Paris",
+                "Petersburg",
+                "Minsk",
+                "Dubai"
+            )
+        )
+        listAutocompleteCityNames.addAll(listCityNames)
+
         binding.btnAddNewCity.visibility = View.GONE
 
         // Здесь прописываем поведение при изменении текста в поисковой строке
@@ -134,8 +148,8 @@ class ActivityNavigation : AppCompatActivity() {
                 binding.rclAutocompleteCities.visibility = View.GONE
                 binding.txtSearchCity.setSelection(str.length)
                 hideKeyBoard(isVisible = true)
+                visibility = View.VISIBLE
             }
-            visibility = View.VISIBLE
         }
     }
 
@@ -225,19 +239,8 @@ class ActivityNavigation : AppCompatActivity() {
         binding = ActivityNavigationBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
-        listCityNames.addAll(
-            setOf(
-                "Moscow",
-                "London",
-                "Berlin",
-                "Paris",
-                "Petersburg",
-                "Minsk",
-                "Dubai"
-            )
-        )
         initElements()
         setUiListeners()
-        val k = 0
+
     }
 }

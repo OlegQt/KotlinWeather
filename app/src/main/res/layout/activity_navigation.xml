@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:visibility="visible"
         app:constraint_referenced_ids="lbl_search_city
-        ,rcl_search_cities" />
+        ,rcl_autocomplete_cities" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/group_forecast"
@@ -25,14 +25,13 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_search_city"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:hint="@string/lbl_search_city"
         app:boxStrokeWidth="0dp"
         app:endIconMode="clear_text"
         app:errorEnabled="false"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/input_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/txt_search_city"
@@ -45,7 +44,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcl_search_cities"
+        android:id="@+id/rcl_autocomplete_cities"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:listitem="@layout/v_item"

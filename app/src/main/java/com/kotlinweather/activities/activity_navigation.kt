@@ -13,7 +13,6 @@ import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.snackbar.Snackbar
 import com.kotlinweather.R
 import com.kotlinweather.adapters.AutoCompleteAdapter
-import com.kotlinweather.adapters.OnCardClickListener
 import com.kotlinweather.databinding.ActivityNavigationBinding
 import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.OpenWeather
@@ -28,6 +27,15 @@ class ActivityNavigation : AppCompatActivity() {
     private lateinit var searchTextWatcher: TextWatcher
     private lateinit var forecastBadge: BadgeDrawable
 
+    // listCityNames содержит названия городов, которые когда-либо были найдены через приложение
+    // При вводе названия города в поисковой строке, ищется match из списка всех названий городов
+    // и заносится в listAutocompleteCityNames, на основе которого строится autocompleteAdapter
+    // и RecyclerView, которые вместе реализуют интерфейс Autocomplete Text Input
+    private val listCityNames = mutableSetOf<String>()
+    private val listAutocompleteCityNames = mutableListOf<String>()
+    private var autocompleteAdapter = AutoCompleteAdapter(listAutocompleteCityNames)
+
+    // Элемент класса доступа к погодному интерфейсу
     private val weatherApi = OpenWeather()
 
     private fun showMsg(textMsg: String) {
@@ -51,8 +59,19 @@ class ActivityNavigation : AppCompatActivity() {
                 //TODO("Not yet implemented")
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(charS: CharSequence?, start: Int, before: Int, count: Int) {
                 //TODO("Not yet implemented")
+                if (!charS.isNullOrEmpty()) {
+                    listAutocompleteCityNames.clear()
+                    val str = listCityNames.filterIndexed { index, s ->
+                        s.contains(charS,ignoreCase = true)
+                    }
+                    listAutocompleteCityNames.addAll(str)
+                    autocompleteAdapter.notifyItemRangeChanged(0,listAutocompleteCityNames.size)
+                    binding.rclAutocompleteCities.visibility = View.VISIBLE
+                }
+                else binding.rclAutocompleteCities.visibility = View.VISIBLE
+
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -62,20 +81,17 @@ class ActivityNavigation : AppCompatActivity() {
         }
 
 
-        val data:Set<String> = setOf("A","B","C")
-        val pAdapter = AutoCompleteAdapter(data)
-        pAdapter.listener = object :OnCardClickListener{
-            override fun onCardClick(str: String) {
-                showMsg("Click")
-            }
-
-        }
-
-        with(binding.rclSearchCities) {
+        with(binding.rclAutocompleteCities) {
             layoutManager = LinearLayoutManager(this@ActivityNavigation)
-            adapter=pAdapter
+            adapter = autocompleteAdapter
             itemAnimator = null
-            pAdapter.setListenerBehaviour { str -> showMsg(str) }
+            // Добавляем обработчик нажатий по элемету RecycleView
+            autocompleteAdapter.setOnCardClickListener { str ->
+                // Устанавливаем текс, скрываем клавиатуру и список
+                binding.txtSearchCity.setText(str)
+                binding.rclAutocompleteCities.visibility = View.GONE
+                hideKeyBoard()
+            }
         }
 
 
@@ -159,9 +175,11 @@ class ActivityNavigation : AppCompatActivity() {
         binding = ActivityNavigationBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
+        this.listCityNames.addAll(setOf("Moscow", "Berlin", "Paris", "London", "Madrid"))
+
         initElements()
         setUiListeners()
-        findCity()
+        //findCity()
 
     }
 }

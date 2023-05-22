@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.kotlinweather.R
 import com.kotlinweather.databinding.VItemBinding
 
-class AutoCompleteAdapter(private val data: Set<String>) : Adapter<AutoCompleteViewHolder>() {
+class AutoCompleteAdapter(var data: MutableList<String>) : Adapter<AutoCompleteViewHolder>() {
     var listener: OnCardClickListener? = null
 
-    fun setListenerBehaviour(settable: OnCardClickListener){
+    fun setOnCardClickListener(settable: OnCardClickListener){
         listener = settable
     }
 
@@ -41,7 +41,7 @@ class AutoCompleteAdapter(private val data: Set<String>) : Adapter<AutoCompleteV
 class AutoCompleteViewHolder(item: View) : ViewHolder(item) {
     val binding = VItemBinding.bind(itemView)
     fun bind(str: String) {
-        binding.lblSearchCityAutocomplete.text = str
+        binding.lblSearchCityAutocomplete.setText(str)
     }
 }
 

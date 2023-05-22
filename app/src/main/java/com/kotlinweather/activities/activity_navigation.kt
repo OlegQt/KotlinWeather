@@ -35,8 +35,11 @@ class ActivityNavigation : AppCompatActivity() {
     private val listAutocompleteCityNames = mutableListOf<String>()
     private val autocompleteAdapter = AutoCompleteAdapter(listAutocompleteCityNames)
 
+    // Переменная для хранения найденной информации о геолокации по названию города
+    private var cityLocationFound = CityInfo("", 0.0, 0.0, "")
+
     // Полный список городов, добавленных на экран прогнозов
-    private val listOfCities:MutableSet<CityInfo> = mutableSetOf()
+    private val listOfCities: MutableSet<CityInfo> = mutableSetOf()
 
     // Элемент класса доступа к погодному интерфейсу
     private val weatherApi = OpenWeather()
@@ -52,9 +55,49 @@ class ActivityNavigation : AppCompatActivity() {
             .show()
     }
 
+    private fun showFoundCity(foundCity: CityInfo) {
+        this.cityLocationFound = foundCity
+        binding.rclAutocompleteCities.visibility = View.GONE
+        binding.btnAddNewCity.visibility = View.VISIBLE
+        binding.btnAddNewCity.text = cityLocationFound.name
+    }
+
+    private fun showStabNoCityFound() {
+        binding.rclAutocompleteCities.visibility = View.VISIBLE
+        binding.btnAddNewCity.visibility = View.GONE
+        showMsg("${binding.txtSearchCity.text} doesn't exist")
+    }
+
+    private fun extractAutocompletedCities(charSequence: CharSequence?) {
+        if (charSequence.isNullOrEmpty()) {
+            // Если поисковый запрос пустой, показываем список всех добавленых городов
+            listAutocompleteCityNames.clear()
+            listAutocompleteCityNames.addAll(listCityNames)
+            autocompleteAdapter.notifyItemRangeChanged(0, listAutocompleteCityNames.size)
+            binding.rclAutocompleteCities.visibility = View.VISIBLE
+        } else {
+            // Если в текстовом поле введены символы
+            // Производим поиск совпадений из списка городов
+            val listOfMatch = listCityNames.filterIndexed { index, s ->
+                s.contains(charSequence, ignoreCase = true)
+            }
+            if (listOfMatch.isEmpty()) {
+                binding.rclAutocompleteCities.visibility = View.GONE
+            } else {
+                listAutocompleteCityNames.clear()
+                listAutocompleteCityNames.addAll(listOfMatch)
+                autocompleteAdapter.notifyItemRangeChanged(0, listAutocompleteCityNames.size)
+                binding.rclAutocompleteCities.visibility = View.VISIBLE
+            }
+        }
+
+
+    }
+
     private fun initElements() {
         forecastBadge = binding.bottomNavBar.getOrCreateBadge(R.id.page_forecast)
         forecastBadge.isVisible = true
+        binding.btnAddNewCity.visibility = View.GONE
 
         // Здесь прописываем поведение при изменении текста в поисковой строке
         searchTextWatcher = object : TextWatcher {
@@ -62,31 +105,20 @@ class ActivityNavigation : AppCompatActivity() {
                 //TODO("Not yet implemented")
             }
 
-            override fun onTextChanged(charS: CharSequence?, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(
+                charSequence: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
                 //TODO("Not yet implemented")
-                binding.rclAutocompleteCities.visibility=View.VISIBLE
-                if (!charS.isNullOrEmpty()) {
-                    listAutocompleteCityNames.clear()
-                    val str = listCityNames.filterIndexed { index, s ->
-                        s.contains(charS,ignoreCase = true)
-                    }
-                    if(str.isEmpty()) binding.rclAutocompleteCities.visibility = View.GONE
-                    listAutocompleteCityNames.addAll(str)
-                    autocompleteAdapter.notifyItemRangeChanged(0,listAutocompleteCityNames.size)
-                    binding.txtSearchCity.setSelection(charS.length)
-                }
-                else {
-                    listAutocompleteCityNames.clear()
-                    listAutocompleteCityNames.addAll(listCityNames)
-                    autocompleteAdapter.notifyItemRangeChanged(0,listAutocompleteCityNames.size)
-                }
-
+                extractAutocompletedCities(charSequence)
             }
+
 
             override fun afterTextChanged(s: Editable?) {
                 //TODO("Not yet implemented")
             }
-
         }
 
         // Устанавливаем и настраиваем поведение RecyclerView
@@ -97,14 +129,14 @@ class ActivityNavigation : AppCompatActivity() {
             itemAnimator = null
             // Добавляем обработчик нажатий по элемету RecycleView
             autocompleteAdapter.setOnCardClickListener { str ->
-                // Устанавливаем текс, скрываем клавиатуру и список
+                // Устанавливаем текст, скрываем клавиатуру и список
                 binding.txtSearchCity.setText(str)
                 binding.rclAutocompleteCities.visibility = View.GONE
-                //hideKeyBoard()
+                binding.txtSearchCity.setSelection(str.length)
+                hideKeyBoard(isVisible = true)
             }
+            visibility = View.VISIBLE
         }
-
-
     }
 
     private fun setUiListeners() {
@@ -118,7 +150,8 @@ class ActivityNavigation : AppCompatActivity() {
         binding.txtSearchCity.setOnEditorActionListener { textView, i, keyEvent ->
             when (i) {
                 EditorInfo.IME_ACTION_SEARCH -> {
-                    hideKeyBoard()
+                    hideKeyBoard(isVisible = false)
+                    findCityLocationByName(textView.text.toString())
                     true
                 }
                 else -> false
@@ -147,7 +180,7 @@ class ActivityNavigation : AppCompatActivity() {
         }
     }
 
-    private fun hideKeyBoard() {
+    private fun hideKeyBoard(isVisible: Boolean) {
         val view: View? = this.currentFocus
         // on below line checking if view is not null.
         if (view != null) {
@@ -157,12 +190,13 @@ class ActivityNavigation : AppCompatActivity() {
                 getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
             // on below line hiding our keyboard.
-            inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+            if (isVisible)  inputMethodManager.showSoftInput(view,0)
+            else inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
 
-    private fun findCityByName() {
-        val call = weatherApi.getCity("Moscow")
+    private fun findCityLocationByName(cityName: String) {
+        val call = weatherApi.getCity(cityName)
         call.enqueue(object : Callback<List<CityInfo>> {
             override fun onResponse(
                 call: Call<List<CityInfo>>,
@@ -170,8 +204,12 @@ class ActivityNavigation : AppCompatActivity() {
             ) {
                 if (response.code() == 200) {
                     if (response.body() != null) {
-                        val city = response.body()?.first()
-                        showMsg(city?.name.toString())
+                        val lst = response.body()
+                        if (lst != null) {
+                            if (lst.isNotEmpty()) {
+                                showFoundCity(lst.first())
+                            } else showStabNoCityFound()
+                        }
                     }
                 }
             }
@@ -187,10 +225,19 @@ class ActivityNavigation : AppCompatActivity() {
         binding = ActivityNavigationBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
-        this.listCityNames.addAll(setOf("Moscow", "Berlin", "Paris", "London", "Madrid"))
-
+        listCityNames.addAll(
+            setOf(
+                "Moscow",
+                "London",
+                "Berlin",
+                "Paris",
+                "Petersburg",
+                "Minsk",
+                "Dubai"
+            )
+        )
         initElements()
         setUiListeners()
-        findCityByName()
+        val k = 0
     }
 }

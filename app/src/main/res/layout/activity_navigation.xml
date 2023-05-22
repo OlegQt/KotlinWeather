@@ -11,7 +11,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.6"/>
+        app:layout_constraintGuide_percent="0.6" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_left_offset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/group_search"
@@ -19,7 +26,8 @@
         android:layout_height="wrap_content"
         android:visibility="visible"
         app:constraint_referenced_ids="lbl_search_city
-        ,rcl_autocomplete_cities" />
+        ,rcl_autocomplete_cities
+        " />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/group_forecast"
@@ -32,13 +40,13 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_search_city"
+        style="@style/input_text"
         android:hint="@string/lbl_search_city"
         app:boxStrokeWidth="0dp"
         app:endIconMode="clear_text"
         app:errorEnabled="false"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/input_text">
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/txt_search_city"
@@ -56,9 +64,20 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
-        tools:listitem="@layout/v_item"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guide_line_vertical"
+        app:layout_constraintStart_toStartOf="@id/guideline_left_offset"
+        app:layout_constraintTop_toBottomOf="@id/lbl_search_city"
+        tools:listitem="@layout/v_item" />
+
+    <Button
+        style="@style/city_button_add_city"
+        android:id="@+id/btn_add_new_city"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cornerRadius="12dp"
+        android:visibility="gone"
+        android:text="@string/app_name"
+        app:layout_constraintStart_toStartOf="@id/guideline_left_offset"
         app:layout_constraintTop_toBottomOf="@id/lbl_search_city" />
 
     <!-- Forecast group -->

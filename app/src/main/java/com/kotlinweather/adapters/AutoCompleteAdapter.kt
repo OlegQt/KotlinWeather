@@ -12,35 +12,28 @@ import com.kotlinweather.databinding.VItemBinding
 
 class AutoCompleteAdapter(private val data: Set<String>) : Adapter<AutoCompleteViewHolder>() {
     lateinit var listener: OnCardClickListener
-
+    lateinit var binding: VItemBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AutoCompleteViewHolder {
-        val itemView = LayoutInflater
-            .from(parent.context)
-            .inflate(R.layout.v_item, parent, false)
-
-        val binding:VItemBinding = VItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-
-        return AutoCompleteViewHolder(itemView,binding)
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.v_item,parent,false)
+        return AutoCompleteViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: AutoCompleteViewHolder, position: Int) {
         holder.bind(data.elementAt(position))
-        holder.binding.lblSearchCityAutocomplete.text ="aaa"
-        holder.binding.lblSearchCityAutocomplete.setOnClickListener {
+        // binding.lblSearchCityAutocomplete.text="A"
+
+        /*holder.binding.lblSearchCityAutocomplete.setOnClickListener {
             listener.onCardClick(data.elementAt(position))
-        }
+        }*/
     }
 
     override fun getItemCount(): Int = data.size
 }
 
-class AutoCompleteViewHolder(item: View,val binding: VItemBinding) : ViewHolder(item) {
-
-    //val txt = item.findViewById<TextView>(R.id.lbl_search_city_autocomplete)
-
+class AutoCompleteViewHolder(item: View) : ViewHolder(item) {
+    val binding = VItemBinding.bind(itemView)
     fun bind(str: String) {
-        binding.lblSearchCityAutocomplete.text = "ddd"
-        //txt.text=str
+        binding.lblSearchCityAutocomplete.text = str
     }
 }
 

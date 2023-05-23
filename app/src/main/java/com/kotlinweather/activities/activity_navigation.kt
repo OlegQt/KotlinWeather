@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.badge.BadgeDrawable
@@ -68,11 +67,11 @@ class ActivityNavigation : AppCompatActivity() {
             .show()
     }
 
-    private fun createAlertDialog(msg:String) {
+    private fun showAlertDialog(msg:String) {
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(msg)
             .setPositiveButton("OK"){d,w ->
-                showMsg("OK")
+                //showMsg("OK")
             }
             .setBackground(getDrawable(R.color.orange))
         dialog.show()
@@ -85,8 +84,8 @@ class ActivityNavigation : AppCompatActivity() {
         binding.layoutSearch.rclAutocompleteCities.visibility = View.GONE
 
         val addCityListener = DialogInterface.OnClickListener { p0, p1 ->
-            val k = 9
-            showMsg("dialog click") }
+            addCityToFavourite(foundCity)
+             }
         val message = with(StringBuilder()){
             append("Country: ${foundCity.country} \n")
             append("\n")
@@ -106,9 +105,20 @@ class ActivityNavigation : AppCompatActivity() {
         dialog.show()
     }
 
+    private fun addCityToFavourite(city:CityInfo){
+        val insert = listOfCities.add(city)
+
+        // Проверяем, если такой город уже добавлен,
+        // Выводим сообщение
+        if (!insert)showAlertDialog("City already inserted")
+        else{
+            forecastBadge.number=listOfCities.size // Увеличиваем badge в меню
+        }
+    }
+
     private fun showStabNoCityFound() {
         searchBinding.rclAutocompleteCities.visibility = View.VISIBLE
-        createAlertDialog("City ${searchBinding.txtSearchCity.text} doesn't found")
+        showAlertDialog("City ${searchBinding.txtSearchCity.text} doesn't found")
     }
 
     private fun extractAutocompletedCities(charSequence: CharSequence?) {

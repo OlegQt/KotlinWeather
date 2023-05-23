@@ -10,5 +10,6 @@
         android:icon="@drawable/thunderstorm_opsz40" />
     <item
         android:id="@+id/page_options"
-        android:title="options"/>
+        android:title="options"
+        android:icon="@drawable/settings_48"/>
 </menu>

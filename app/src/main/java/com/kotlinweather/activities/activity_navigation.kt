@@ -1,5 +1,6 @@
 package com.kotlinweather.activities
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,9 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.kotlinweather.R
 import com.kotlinweather.adapters.AutoCompleteAdapter
@@ -30,7 +33,7 @@ class ActivityNavigation : AppCompatActivity() {
     private lateinit var binding: ActivityNavigationBinding
     private lateinit var searchBinding: NavigationSearchBinding
     private lateinit var forecastBinding: NavigationForecastBinding
-    private lateinit var optionsBinding:NavigationOptionsBinding
+    private lateinit var optionsBinding: NavigationOptionsBinding
 
     //
     private var currentScreenMode: ScreenMode = ScreenMode.SEARCH
@@ -65,17 +68,41 @@ class ActivityNavigation : AppCompatActivity() {
             .show()
     }
 
+    private fun createAlertDialog(msg:String) {
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(msg)
+            .setPositiveButton("OK"){d,w ->
+                showMsg("OK")
+            }
+            .setBackground(getDrawable(R.color.orange))
+        dialog.show()
+
+    }
+
     private fun showFoundCity(foundCity: CityInfo) {
         this.cityLocationFound = foundCity
+
         binding.layoutSearch.rclAutocompleteCities.visibility = View.GONE
-        binding.layoutSearch.btnAddNewCity.visibility = View.VISIBLE
-        binding.layoutSearch.btnAddNewCity.text = cityLocationFound.name
+
+        val addCityListener = DialogInterface.OnClickListener { p0, p1 ->
+            val k = 9
+            showMsg("dialog click") }
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(foundCity.name)
+            .setMessage("Country: ${foundCity.country}")
+            .setNegativeButton("decline") { dialog, which ->}
+            .setPositiveButton("OK",addCityListener)
+            .setIcon(R.drawable.location_on_48)
+            .create()
+
+        dialog.show()
     }
 
     private fun showStabNoCityFound() {
         searchBinding.rclAutocompleteCities.visibility = View.VISIBLE
         searchBinding.btnAddNewCity.visibility = View.GONE
-        showMsg("${searchBinding.txtSearchCity.text} doesn't exist")
+        createAlertDialog("City ${searchBinding.txtSearchCity.text} doesn't found")
     }
 
     private fun extractAutocompletedCities(charSequence: CharSequence?) {
@@ -172,10 +199,10 @@ class ActivityNavigation : AppCompatActivity() {
 
     private fun setUiListeners() {
         binding.bottomNavBar.setOnItemSelectedListener {
-            when(it.itemId){
+            when (it.itemId) {
                 R.id.page_forecast -> currentScreenMode = ScreenMode.FORECAST
                 R.id.page_search -> currentScreenMode = ScreenMode.SEARCH
-                R.id.page_options ->currentScreenMode = ScreenMode.OPTIONS
+                R.id.page_options -> currentScreenMode = ScreenMode.OPTIONS
             }
             changeScreenMode(currentScreenMode)
         }
@@ -196,27 +223,27 @@ class ActivityNavigation : AppCompatActivity() {
 
     }
 
-    private fun changeScreenMode(mode:ScreenMode):Boolean {
+    private fun changeScreenMode(mode: ScreenMode): Boolean {
         when (mode) {
             ScreenMode.SEARCH -> {
                 // Меняем видимость дочерних layout
                 searchBinding.root.visibility = View.VISIBLE
                 forecastBinding.root.visibility = View.GONE
-                optionsBinding.root.visibility=View.GONE
+                optionsBinding.root.visibility = View.GONE
                 return true
             }
             ScreenMode.FORECAST -> {
                 // Меняем видимость дочерних layout
                 searchBinding.root.visibility = View.GONE
                 forecastBinding.root.visibility = View.VISIBLE
-                optionsBinding.root.visibility=View.GONE
+                optionsBinding.root.visibility = View.GONE
                 return true
             }
             ScreenMode.OPTIONS -> {
                 // Меняем видимость дочерних layout
                 searchBinding.root.visibility = View.GONE
                 forecastBinding.root.visibility = View.GONE
-                optionsBinding.root.visibility=View.VISIBLE
+                optionsBinding.root.visibility = View.VISIBLE
                 return true
             }
             else -> return false
@@ -277,5 +304,7 @@ class ActivityNavigation : AppCompatActivity() {
         initElements()
         setUiListeners()
         changeScreenMode(ScreenMode.SEARCH)
+
+
     }
 }

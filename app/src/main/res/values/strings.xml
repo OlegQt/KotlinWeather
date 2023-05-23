@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">KotlinWeather</string>
+    <string name="lbl_search_city">City name</string>
 </resources>

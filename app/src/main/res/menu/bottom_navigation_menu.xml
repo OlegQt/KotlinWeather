@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/page_search"
+        android:title="search"
+        android:icon="@drawable/search_off_opsz48" />
+    <item
+        android:id="@+id/page_forecast"
+        android:title="forecast"
+        android:icon="@drawable/thunderstorm_opsz40" />
+</menu>

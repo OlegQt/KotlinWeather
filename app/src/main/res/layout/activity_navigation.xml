@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ActivityNavigation">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_line_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_left_offset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="lbl_search_city
+
+        " />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_forecast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="simple_txt" />
+
+    <!-- Search group -->
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_search_city"
+        style="@style/input_text"
+        android:hint="@string/lbl_search_city"
+        app:boxStrokeWidth="0dp"
+        app:endIconMode="clear_text"
+        app:errorEnabled="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/txt_search_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcl_autocomplete_cities"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toStartOf="@id/guide_line_vertical"
+        app:layout_constraintStart_toStartOf="@id/guideline_left_offset"
+        app:layout_constraintTop_toBottomOf="@id/lbl_search_city"
+        tools:listitem="@layout/v_item" />
+
+    <Button
+        style="@style/city_button_add_city"
+        android:id="@+id/btn_add_new_city"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cornerRadius="12dp"
+        android:visibility="visible"
+        android:text="@string/app_name"
+        app:layout_constraintStart_toStartOf="@id/guideline_left_offset"
+        app:layout_constraintTop_toBottomOf="@id/rcl_autocomplete_cities" />
+
+    <!-- Forecast group -->
+    <TextView
+        android:id="@+id/simple_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- style="@style/Widget.MaterialComponents.BottomNavigationView.Colored" -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

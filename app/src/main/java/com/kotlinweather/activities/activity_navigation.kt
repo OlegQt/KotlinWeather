@@ -28,7 +28,7 @@ class ActivityNavigation : AppCompatActivity() {
     private lateinit var binding: ActivityNavigationBinding
     private lateinit var searchBinding: NavigationSearchBinding
     private lateinit var forecastBinding: NavigationForecastBinding
-    private var currentScreenMode: ScreenMode = ScreenMode.FORECAST
+    private var currentScreenMode: ScreenMode = ScreenMode.SEARCH
     private lateinit var searchTextWatcher: TextWatcher
     private lateinit var forecastBadge: BadgeDrawable
 
@@ -166,7 +166,11 @@ class ActivityNavigation : AppCompatActivity() {
 
     private fun setUiListeners() {
         binding.bottomNavBar.setOnItemSelectedListener {
-            changeScreenMode(it.itemId)
+            when(it.itemId){
+                R.id.page_forecast -> currentScreenMode = ScreenMode.FORECAST
+                R.id.page_search -> currentScreenMode = ScreenMode.SEARCH
+            }
+            changeScreenMode(currentScreenMode)
         }
 
         // Слушатель для текстового поля поиска городов
@@ -185,25 +189,27 @@ class ActivityNavigation : AppCompatActivity() {
 
     }
 
-    private fun changeScreenMode(itemId: Int): Boolean {
-        return when (itemId) {
-            R.id.page_search -> {
+    private fun changeScreenMode(mode:ScreenMode):Boolean {
+        when (mode) {
+            ScreenMode.SEARCH -> {
                 // Изменяем представление на поиск городов
                 currentScreenMode = ScreenMode.SEARCH
 
+                // Меняем видимость дочерних layout
                 searchBinding.root.visibility = View.VISIBLE
                 forecastBinding.root.visibility = View.GONE
-                true
+                return true
             }
-            R.id.page_forecast -> {
+            ScreenMode.FORECAST -> {
                 // Изменяем представление на просмотр прогнозов
                 currentScreenMode = ScreenMode.FORECAST
 
+                // Меняем видимость дочерних layout
                 searchBinding.root.visibility = View.GONE
                 forecastBinding.root.visibility = View.VISIBLE
-                true
+                return true
             }
-            else -> false
+            else -> return false
         }
     }
 
@@ -262,6 +268,7 @@ class ActivityNavigation : AppCompatActivity() {
 
         initElements()
         setUiListeners()
+        changeScreenMode(ScreenMode.SEARCH)
 
     }
 }

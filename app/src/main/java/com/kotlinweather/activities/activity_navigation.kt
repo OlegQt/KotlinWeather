@@ -13,6 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.kotlinweather.R
 import com.kotlinweather.adapters.AutoCompleteAdapter
 import com.kotlinweather.databinding.ActivityNavigationBinding
@@ -23,6 +26,7 @@ import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.CityWeather
 import com.kotlinweather.http.OpenWeather
 import com.kotlinweather.models.ScreenMode
+import com.kotlinweather.sharedprefs.WeatherApp
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -81,10 +85,12 @@ class ActivityNavigation : AppCompatActivity() {
     private fun showFoundCity(foundCity: CityInfo) {
         this.cityLocationFound = foundCity
 
-        binding.layoutSearch.rclAutocompleteCities.visibility = View.GONE
+        //binding.layoutSearch.rclAutocompleteCities.visibility = View.GONE
+        searchBinding.txtSearchCity.setText("")
 
         val addCityListener = DialogInterface.OnClickListener { p0, p1 ->
             addCityToFavourite(foundCity)
+            extractAutocompletedCities("")
         }
         val message = with(StringBuilder()) {
             append("Country: ${foundCity.country} \n")
@@ -112,8 +118,9 @@ class ActivityNavigation : AppCompatActivity() {
         // Выводим сообщение
         if (insert) showAlertDialog("City already inserted")
         else {
-            forecastBadge.number = listOfCities.size + 1// Увеличиваем badge в меню
+            forecastBadge.number = listOfCities.size // Увеличиваем badge в меню
             listOfCities[city] = null
+            saveCities() // Сохраняем города в SharedPrefs
         }
     }
 
@@ -153,6 +160,10 @@ class ActivityNavigation : AppCompatActivity() {
     private fun initElements() {
         forecastBadge = binding.bottomNavBar.getOrCreateBadge(R.id.page_search)
         forecastBadge.isVisible = true
+        loadCities()
+        extractAutocompletedCities("")
+        forecastBadge.number=listOfCities.size
+
 
         // Здесь прописываем поведение при изменении текста в поисковой строке
         searchTextWatcher = object : TextWatcher {
@@ -182,6 +193,7 @@ class ActivityNavigation : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@ActivityNavigation)
             adapter = autocompleteAdapter
             itemAnimator = null
+            visibility = View.VISIBLE
             // Добавляем обработчик нажатий по элемету RecycleView
             autocompleteAdapter.setOnCardClickListener { city ->
                 // Функция выполняется при нажатие на подсказку с назаванием города
@@ -191,7 +203,6 @@ class ActivityNavigation : AppCompatActivity() {
                     rclAutocompleteCities.visibility = View.GONE // Скрыли остальные подсказки
                     txtSearchCity.setSelection(city.name.length) // Переместили каретку вконец строки
                     showKeyBoard(isVisible = true) // Отобразили клавиатуру
-                    rclAutocompleteCities.visibility = View.VISIBLE
                 }
             }
         }
@@ -220,6 +231,32 @@ class ActivityNavigation : AppCompatActivity() {
                 else -> false
             }
         }
+
+        optionsBinding.btnTestJson.setOnClickListener{testJson()}
+
+    }
+
+    private fun saveCities(){
+        if(listOfCities.isNotEmpty()) {
+            val jsonCities = Gson().toJson(listOfCities.keys)
+            WeatherApp.sharedPreferences.edit().putString(WeatherApp.APP_PREFERENCES_CITIES,jsonCities).apply()
+        }
+    }
+
+    private fun loadCities() {
+        val jsonCities = WeatherApp.sharedPreferences.getString(WeatherApp.APP_PREFERENCES_CITIES,"")
+        if(!jsonCities.isNullOrEmpty()) {
+            val array = Gson().fromJson(jsonCities, Array<CityInfo>::class.java)
+            listOfCities.clear()
+            array.forEach {
+                listOfCities[it] = null
+            }
+        }
+    }
+
+    private fun testJson(){
+        WeatherApp.sharedPreferences.edit().remove(WeatherApp.APP_PREFERENCES_CITIES).apply()
+        listOfCities.clear()
 
     }
 
@@ -304,7 +341,5 @@ class ActivityNavigation : AppCompatActivity() {
         initElements()
         setUiListeners()
         changeScreenMode(ScreenMode.SEARCH)
-
-
     }
 }

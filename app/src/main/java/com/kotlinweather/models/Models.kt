@@ -1,5 +1,7 @@
 package com.kotlinweather.http
 
+import com.google.gson.annotations.SerializedName
+
 
 data class CityInfo(
     val name: String,

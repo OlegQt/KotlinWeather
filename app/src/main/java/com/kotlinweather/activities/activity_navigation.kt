@@ -15,6 +15,7 @@ import com.kotlinweather.R
 import com.kotlinweather.adapters.AutoCompleteAdapter
 import com.kotlinweather.databinding.ActivityNavigationBinding
 import com.kotlinweather.databinding.NavigationForecastBinding
+import com.kotlinweather.databinding.NavigationOptionsBinding
 import com.kotlinweather.databinding.NavigationSearchBinding
 import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.OpenWeather
@@ -25,9 +26,13 @@ import retrofit2.Response
 
 
 class ActivityNavigation : AppCompatActivity() {
+    // Переменные для Binding
     private lateinit var binding: ActivityNavigationBinding
     private lateinit var searchBinding: NavigationSearchBinding
     private lateinit var forecastBinding: NavigationForecastBinding
+    private lateinit var optionsBinding:NavigationOptionsBinding
+
+    //
     private var currentScreenMode: ScreenMode = ScreenMode.SEARCH
     private lateinit var searchTextWatcher: TextWatcher
     private lateinit var forecastBadge: BadgeDrawable
@@ -170,6 +175,7 @@ class ActivityNavigation : AppCompatActivity() {
             when(it.itemId){
                 R.id.page_forecast -> currentScreenMode = ScreenMode.FORECAST
                 R.id.page_search -> currentScreenMode = ScreenMode.SEARCH
+                R.id.page_options ->currentScreenMode = ScreenMode.OPTIONS
             }
             changeScreenMode(currentScreenMode)
         }
@@ -193,21 +199,24 @@ class ActivityNavigation : AppCompatActivity() {
     private fun changeScreenMode(mode:ScreenMode):Boolean {
         when (mode) {
             ScreenMode.SEARCH -> {
-                // Изменяем представление на поиск городов
-                currentScreenMode = ScreenMode.SEARCH
-
                 // Меняем видимость дочерних layout
                 searchBinding.root.visibility = View.VISIBLE
                 forecastBinding.root.visibility = View.GONE
+                optionsBinding.root.visibility=View.GONE
                 return true
             }
             ScreenMode.FORECAST -> {
-                // Изменяем представление на просмотр прогнозов
-                currentScreenMode = ScreenMode.FORECAST
-
                 // Меняем видимость дочерних layout
                 searchBinding.root.visibility = View.GONE
                 forecastBinding.root.visibility = View.VISIBLE
+                optionsBinding.root.visibility=View.GONE
+                return true
+            }
+            ScreenMode.OPTIONS -> {
+                // Меняем видимость дочерних layout
+                searchBinding.root.visibility = View.GONE
+                forecastBinding.root.visibility = View.GONE
+                optionsBinding.root.visibility=View.VISIBLE
                 return true
             }
             else -> return false
@@ -262,6 +271,7 @@ class ActivityNavigation : AppCompatActivity() {
         // Получаем binding для вложенных элементов
         searchBinding = NavigationSearchBinding.bind(binding.layoutSearch.root)
         forecastBinding = NavigationForecastBinding.bind(binding.layoutForecast.root)
+        optionsBinding = NavigationOptionsBinding.bind(binding.layoutOptions.root)
 
         // Основные функции для построения активити
         initElements()

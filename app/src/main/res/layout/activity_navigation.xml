@@ -8,24 +8,35 @@
 
     <!-- Search group -->
     <include
-        layout="@layout/navigation_search"
         android:id="@+id/layout_search"
+        layout="@layout/navigation_search"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="visible"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <!-- Forecast group -->
-    <include layout="@layout/navigation_forecast"
+    <include
         android:id="@+id/layout_forecast"
+        layout="@layout/navigation_forecast"
         app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Options group -->
+    <include
+        android:id="@+id/layout_options"
+        layout="@layout/navigation_options"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
+    <!-- Navigation group -->
     <!-- style="@style/Widget.MaterialComponents.BottomNavigationView.Colored" -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav_bar"

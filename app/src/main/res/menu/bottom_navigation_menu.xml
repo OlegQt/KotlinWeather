@@ -8,4 +8,7 @@
         android:id="@+id/page_forecast"
         android:title="forecast"
         android:icon="@drawable/thunderstorm_opsz40" />
+    <item
+        android:id="@+id/page_options"
+        android:title="options"/>
 </menu>

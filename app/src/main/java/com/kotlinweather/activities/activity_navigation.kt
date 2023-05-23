@@ -117,6 +117,7 @@ class ActivityNavigation : AppCompatActivity() {
                 "Dubai"
             )
         )
+
         listAutocompleteCityNames.addAll(listCityNames)
 
         searchBinding.btnAddNewCity.visibility = View.GONE
@@ -262,13 +263,9 @@ class ActivityNavigation : AppCompatActivity() {
         searchBinding = NavigationSearchBinding.bind(binding.layoutSearch.root)
         forecastBinding = NavigationForecastBinding.bind(binding.layoutForecast.root)
 
-        //searchBinding = NavigationSearchBinding.inflate(layoutInflater, binding.root, false)
-        //forecastBinding = NavigationForecastBinding.inflate(layoutInflater, binding.root, false)
-
-
+        // Основные функции для построения активити
         initElements()
         setUiListeners()
         changeScreenMode(ScreenMode.SEARCH)
-
     }
 }

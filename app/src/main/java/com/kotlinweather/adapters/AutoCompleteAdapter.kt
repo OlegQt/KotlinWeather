@@ -43,7 +43,7 @@ class AutoCompleteAdapter(private var data: MutableMap<CityInfo,CityWeather?>) :
 class AutoCompleteViewHolder(item: View) : ViewHolder(item) {
     val binding = VItemBinding.bind(itemView)
     fun bind(city: CityInfo,weather:CityWeather?) {
-        binding.lblSearchCityAutocomplete.text = city.name
+        binding.lblSearchCityAutocomplete.text = city.name.plus(" ${weather?.main?.feels_like}")
     }
 }
 

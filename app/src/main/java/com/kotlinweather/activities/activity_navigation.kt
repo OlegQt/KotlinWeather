@@ -14,8 +14,6 @@ import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import com.kotlinweather.R
 import com.kotlinweather.adapters.AutoCompleteAdapter
 import com.kotlinweather.databinding.ActivityNavigationBinding
@@ -24,6 +22,7 @@ import com.kotlinweather.databinding.NavigationOptionsBinding
 import com.kotlinweather.databinding.NavigationSearchBinding
 import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.CityWeather
+import com.kotlinweather.http.OnCurrentWeatherListener
 import com.kotlinweather.http.OpenWeather
 import com.kotlinweather.models.ScreenMode
 import com.kotlinweather.sharedprefs.WeatherApp
@@ -118,15 +117,23 @@ class ActivityNavigation : AppCompatActivity() {
         // Выводим сообщение
         if (insert) showAlertDialog("City already inserted")
         else {
-            forecastBadge.number = listOfCities.size // Увеличиваем badge в меню
             listOfCities[city] = null
             saveCities() // Сохраняем города в SharedPrefs
+            updateSearchBadgeNumber()
+            // Делаем запрос через retrofit на обновление погоды
+            updateCityCurrentWeather(city)
         }
     }
 
     private fun showStabNoCityFound() {
         searchBinding.rclAutocompleteCities.visibility = View.VISIBLE
         showAlertDialog("City ${searchBinding.txtSearchCity.text} doesn't found")
+    }
+
+    private fun updateSearchBadgeNumber(){
+        forecastBadge = binding.bottomNavBar.getOrCreateBadge(R.id.page_search)
+        forecastBadge.isVisible = true
+        forecastBadge.number=listOfCities.size
     }
 
     private fun extractAutocompletedCities(charSequence: CharSequence?) {
@@ -158,11 +165,13 @@ class ActivityNavigation : AppCompatActivity() {
     }
 
     private fun initElements() {
-        forecastBadge = binding.bottomNavBar.getOrCreateBadge(R.id.page_search)
-        forecastBadge.isVisible = true
         loadCities()
+        listOfCities.keys.forEach{
+            updateCityCurrentWeather(it)
+        }
         extractAutocompletedCities("")
-        forecastBadge.number=listOfCities.size
+        updateSearchBadgeNumber()
+
 
 
         // Здесь прописываем поведение при изменении текста в поисковой строке
@@ -257,7 +266,20 @@ class ActivityNavigation : AppCompatActivity() {
     private fun testJson(){
         WeatherApp.sharedPreferences.edit().remove(WeatherApp.APP_PREFERENCES_CITIES).apply()
         listOfCities.clear()
+        listAutocompleteCityNames.clear()
+        updateSearchBadgeNumber()
+        autocompleteAdapter.notifyDataSetChanged()
+    }
 
+    private fun updateCityCurrentWeather(city: CityInfo){
+        val listener = OnCurrentWeatherListener { citi, cityWeather ->
+            if (cityWeather!=null){
+                listOfCities[citi] = cityWeather // Добавляем данные погоды в общий список городов
+                listAutocompleteCityNames[citi]=cityWeather // Так же обновляем и видимый список городов
+                autocompleteAdapter.notifyItemChanged(listOfCities.keys.indexOf(citi))
+            }
+        }
+        weatherApi.getCurrentWeather(city,listener)
     }
 
     private fun changeScreenMode(mode: ScreenMode): Boolean {

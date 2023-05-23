@@ -14,7 +14,6 @@ class OpenWeather() {
     private val appKey = "ce2b06f255f2307c07504a706c9d920d"
     private val TAG = "OpenWeather"
 
-
     private var retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create())
@@ -22,50 +21,28 @@ class OpenWeather() {
 
     private val openWeather: OpenWeatherApi = retrofit.create(OpenWeatherApi::class.java)
 
-    fun getCity(cityName: String):Call<kotlin.collections.List<CityInfo>>{
+    fun getCity(cityName: String): Call<List<CityInfo>> {
         return openWeather.getCitiesLocation(cityName, appKey, 10, "ru")
     }
 
-
-
-
-
-    fun getLocations(cityName: String) {
-        val call = openWeather.getCitiesLocation(cityName, appKey, 10, "ru")
-        call.enqueue(object : Callback<List<CityInfo>> {
-            override fun onResponse(
-                call: Call<List<CityInfo>>,
-                response: Response<List<CityInfo>>
-            ) {
-                Log.d(TAG, response.code().toString())
-                if (response.code() == 200) {
-                    //if (response.body() != null) listener?.showFoundCities(response.body()!!)
-                }
-            }
-
-            override fun onFailure(call: Call<List<CityInfo>>, t: Throwable) {
-                Log.d(TAG, "fail")
-            }
-
-        })
-    }
-
-    fun getWeather(city: CityInfo) {
+    fun getCurrentWeather(city: CityInfo, weatherListener: OnCurrentWeatherListener) {
         val call = openWeather.getWeather(city.lat, city.lon, appKey, "metric")
         call.enqueue(object : Callback<CityWeather> {
             override fun onResponse(call: Call<CityWeather>, response: Response<CityWeather>) {
-                if (response.body() != null) {
-                    //listener?.updateCityCurrentWeather(response.body()!!, city)
+                //TODO("Not yet implemented")
+                if (response.code() == 200) {
+                    weatherListener.requestWeather(city, response.body())
                 }
             }
 
             override fun onFailure(call: Call<CityWeather>, t: Throwable) {
-                Log.d(TAG, "Weather fail")
+                //TODO("Not yet implemented")
             }
         })
     }
 
-    fun requestWeather(cityInfo: CityInfo) {
+
+    /*fun requestWeather(cityInfo: CityInfo) {
         val call = openWeather.requestWeatherByCityName(cityInfo.name, "metric", appKey, "ru")
         call.enqueue(object : Callback<CityWeather> {
             override fun onResponse(call: Call<CityWeather>, response: Response<CityWeather>) {
@@ -113,5 +90,9 @@ class OpenWeather() {
             }
 
         })
-    }
+ */
+}
+
+fun interface OnCurrentWeatherListener {
+    fun requestWeather(citi: CityInfo, cityWeather: CityWeather?)
 }

@@ -35,13 +35,14 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcl_autocomplete_cities"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@id/guideline_vertical_end"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_search_city"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/v_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

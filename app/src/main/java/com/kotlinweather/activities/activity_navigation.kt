@@ -20,6 +20,7 @@ import com.kotlinweather.databinding.NavigationForecastBinding
 import com.kotlinweather.databinding.NavigationOptionsBinding
 import com.kotlinweather.databinding.NavigationSearchBinding
 import com.kotlinweather.http.CityInfo
+import com.kotlinweather.http.CityWeather
 import com.kotlinweather.http.OpenWeather
 import com.kotlinweather.models.ScreenMode
 import retrofit2.Call
@@ -43,15 +44,14 @@ class ActivityNavigation : AppCompatActivity() {
     // При вводе названия города в поисковой строке, ищется match из списка всех названий городов
     // и заносится в listAutocompleteCityNames, на основе которого строится autocompleteAdapter
     // и RecyclerView, которые вместе реализуют интерфейс Autocomplete Text Input
-    private val listCityNames = mutableSetOf<String>()
-    private val listAutocompleteCityNames = mutableListOf<String>()
+    private val listAutocompleteCityNames: MutableMap<CityInfo, CityWeather?> = mutableMapOf()
     private val autocompleteAdapter = AutoCompleteAdapter(listAutocompleteCityNames)
 
     // Переменная для хранения найденной информации о геолокации по названию города
     private var cityLocationFound = CityInfo("", 0.0, 0.0, "")
 
-    // Полный список городов, добавленных на экран прогнозов
-    private val listOfCities: MutableSet<CityInfo> = mutableSetOf()
+    // Полный список городов
+    private val listOfCities: MutableMap<CityInfo, CityWeather?> = mutableMapOf()
 
     // Элемент класса доступа к погодному интерфейсу
     private val weatherApi = OpenWeather()
@@ -67,10 +67,10 @@ class ActivityNavigation : AppCompatActivity() {
             .show()
     }
 
-    private fun showAlertDialog(msg:String) {
+    private fun showAlertDialog(msg: String) {
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(msg)
-            .setPositiveButton("OK"){d,w ->
+            .setPositiveButton("OK") { d, w ->
                 //showMsg("OK")
             }
             .setBackground(getDrawable(R.color.orange))
@@ -85,8 +85,8 @@ class ActivityNavigation : AppCompatActivity() {
 
         val addCityListener = DialogInterface.OnClickListener { p0, p1 ->
             addCityToFavourite(foundCity)
-             }
-        val message = with(StringBuilder()){
+        }
+        val message = with(StringBuilder()) {
             append("Country: ${foundCity.country} \n")
             append("\n")
             append("Lat: ${foundCity.lat} \n")
@@ -97,22 +97,23 @@ class ActivityNavigation : AppCompatActivity() {
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(foundCity.name)
             .setMessage(message)
-            .setNegativeButton("decline") { dialog, which ->}
-            .setPositiveButton("OK",addCityListener)
+            .setNegativeButton("decline") { dialog, which -> }
+            .setPositiveButton("OK", addCityListener)
             .setIcon(R.drawable.location_on_48)
             .create()
 
         dialog.show()
     }
 
-    private fun addCityToFavourite(city:CityInfo){
-        val insert = listOfCities.add(city)
+    private fun addCityToFavourite(city: CityInfo) {
+        val insert = listOfCities.containsKey(city)
 
         // Проверяем, если такой город уже добавлен,
         // Выводим сообщение
-        if (!insert)showAlertDialog("City already inserted")
-        else{
-            forecastBadge.number=listOfCities.size // Увеличиваем badge в меню
+        if (insert) showAlertDialog("City already inserted")
+        else {
+            forecastBadge.number = listOfCities.size + 1// Увеличиваем badge в меню
+            listOfCities[city] = null
         }
     }
 
@@ -127,20 +128,20 @@ class ActivityNavigation : AppCompatActivity() {
         if (charSequence.isNullOrEmpty()) {
             // Если поисковый запрос пустой, показываем список всех добавленых городов
             listAutocompleteCityNames.clear()
-            listAutocompleteCityNames.addAll(listCityNames)
+            listAutocompleteCityNames.putAll(listOfCities)
             autocompleteAdapter.notifyItemRangeChanged(0, listAutocompleteCityNames.size)
             searchBinding.rclAutocompleteCities.visibility = View.VISIBLE
         } else {
             // Если в текстовом поле введены символы
             // Производим поиск совпадений из списка городов
-            val listOfMatch = listCityNames.filterIndexed { index, s ->
-                s.contains(charSequence, ignoreCase = true)
+            val listOfMatch = listOfCities.filter {
+                it.key.name.contains(charSequence, ignoreCase = true)
             }
             if (listOfMatch.isEmpty()) {
                 searchBinding.rclAutocompleteCities.visibility = View.GONE
             } else {
                 listAutocompleteCityNames.clear()
-                listAutocompleteCityNames.addAll(listOfMatch)
+                listAutocompleteCityNames.putAll(listOfMatch)
                 autocompleteAdapter.notifyItemRangeChanged(0, listAutocompleteCityNames.size)
                 searchBinding.rclAutocompleteCities.visibility = View.VISIBLE
             }
@@ -150,22 +151,8 @@ class ActivityNavigation : AppCompatActivity() {
     }
 
     private fun initElements() {
-        forecastBadge = binding.bottomNavBar.getOrCreateBadge(R.id.page_forecast)
+        forecastBadge = binding.bottomNavBar.getOrCreateBadge(R.id.page_search)
         forecastBadge.isVisible = true
-
-        listCityNames.addAll(
-            setOf(
-                "Moscow",
-                "London",
-                "Berlin",
-                "Paris",
-                "Petersburg",
-                "Minsk",
-                "Dubai"
-            )
-        )
-
-        listAutocompleteCityNames.addAll(listCityNames)
 
         // Здесь прописываем поведение при изменении текста в поисковой строке
         searchTextWatcher = object : TextWatcher {
@@ -196,13 +183,13 @@ class ActivityNavigation : AppCompatActivity() {
             adapter = autocompleteAdapter
             itemAnimator = null
             // Добавляем обработчик нажатий по элемету RecycleView
-            autocompleteAdapter.setOnCardClickListener { str ->
+            autocompleteAdapter.setOnCardClickListener { city ->
                 // Функция выполняется при нажатие на подсказку с назаванием города
                 with(searchBinding) {
                     txtSearchCity.requestFocus() // Установили фокус в поле поиска
-                    txtSearchCity.setText(str) // Загрузили название города из подсказки
+                    txtSearchCity.setText(city.name) // Загрузили название города из подсказки
                     rclAutocompleteCities.visibility = View.GONE // Скрыли остальные подсказки
-                    txtSearchCity.setSelection(str.length) // Переместили каретку вконец строки
+                    txtSearchCity.setSelection(city.name.length) // Переместили каретку вконец строки
                     showKeyBoard(isVisible = true) // Отобразили клавиатуру
                     rclAutocompleteCities.visibility = View.VISIBLE
                 }

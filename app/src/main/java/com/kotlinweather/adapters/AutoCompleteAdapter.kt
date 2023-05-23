@@ -9,8 +9,10 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.kotlinweather.R
 import com.kotlinweather.databinding.VItemBinding
+import com.kotlinweather.http.CityInfo
+import com.kotlinweather.http.CityWeather
 
-class AutoCompleteAdapter(var data: MutableList<String>) : Adapter<AutoCompleteViewHolder>() {
+class AutoCompleteAdapter(private var data: MutableMap<CityInfo,CityWeather?>) : Adapter<AutoCompleteViewHolder>() {
     var listener: OnCardClickListener? = null
 
     fun setOnCardClickListener(settable: OnCardClickListener){
@@ -23,10 +25,10 @@ class AutoCompleteAdapter(var data: MutableList<String>) : Adapter<AutoCompleteV
     }
 
     override fun onBindViewHolder(holder: AutoCompleteViewHolder, position: Int) {
-        holder.bind(data.elementAt(position))
+        holder.bind(data.keys.elementAt(position),data.values.elementAt(position))
 
         holder.binding.root.setOnClickListener {
-            listener?.onCardClick(data.elementAt(position))
+            listener?.onCardClick(data.keys.elementAt(position))
         }
     }
 
@@ -40,8 +42,8 @@ class AutoCompleteAdapter(var data: MutableList<String>) : Adapter<AutoCompleteV
 
 class AutoCompleteViewHolder(item: View) : ViewHolder(item) {
     val binding = VItemBinding.bind(itemView)
-    fun bind(str: String) {
-        binding.lblSearchCityAutocomplete.setText(str)
+    fun bind(city: CityInfo,weather:CityWeather?) {
+        binding.lblSearchCityAutocomplete.text = city.name
     }
 }
 
@@ -49,5 +51,5 @@ class AutoCompleteViewHolder(item: View) : ViewHolder(item) {
 
 
 fun interface OnCardClickListener {
-    fun onCardClick(str: String)
+    fun onCardClick(city: CityInfo)
 }

@@ -1,6 +1,5 @@
 package com.kotlinweather.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,12 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.snackbar.Snackbar
 import com.kotlinweather.R
 import com.kotlinweather.adapters.AutoCompleteAdapter
 import com.kotlinweather.databinding.ActivityNavigationBinding
+import com.kotlinweather.databinding.NavigationForecastBinding
+import com.kotlinweather.databinding.NavigationSearchBinding
 import com.kotlinweather.http.CityInfo
 import com.kotlinweather.http.OpenWeather
 import com.kotlinweather.models.ScreenMode
@@ -21,8 +23,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class ActivityNavigation : AppCompatActivity() {
     private lateinit var binding: ActivityNavigationBinding
+    private lateinit var searchBinding: NavigationSearchBinding
+    private lateinit var forecastBinding: NavigationForecastBinding
     private var currentScreenMode: ScreenMode = ScreenMode.FORECAST
     private lateinit var searchTextWatcher: TextWatcher
     private lateinit var forecastBadge: BadgeDrawable
@@ -57,27 +62,27 @@ class ActivityNavigation : AppCompatActivity() {
 
     private fun showFoundCity(foundCity: CityInfo) {
         this.cityLocationFound = foundCity
-        binding.rclAutocompleteCities.visibility = View.GONE
-        binding.btnAddNewCity.visibility = View.VISIBLE
-        binding.btnAddNewCity.text = cityLocationFound.name
+        binding.layoutSearch.rclAutocompleteCities.visibility = View.GONE
+        binding.layoutSearch.btnAddNewCity.visibility = View.VISIBLE
+        binding.layoutSearch.btnAddNewCity.text = cityLocationFound.name
     }
 
     private fun showStabNoCityFound() {
-        binding.rclAutocompleteCities.visibility = View.VISIBLE
-        binding.btnAddNewCity.visibility = View.GONE
-        showMsg("${binding.txtSearchCity.text} doesn't exist")
+        searchBinding.rclAutocompleteCities.visibility = View.VISIBLE
+        searchBinding.btnAddNewCity.visibility = View.GONE
+        showMsg("${searchBinding.txtSearchCity.text} doesn't exist")
     }
 
     private fun extractAutocompletedCities(charSequence: CharSequence?) {
         // В любом случае скрываем кнопку с найденным городом
         // Так как если пользователь начал изменение поля ввода, надо отобразить подсказку
-        binding.btnAddNewCity.visibility = View.GONE
+        searchBinding.btnAddNewCity.visibility = View.GONE
         if (charSequence.isNullOrEmpty()) {
             // Если поисковый запрос пустой, показываем список всех добавленых городов
             listAutocompleteCityNames.clear()
             listAutocompleteCityNames.addAll(listCityNames)
             autocompleteAdapter.notifyItemRangeChanged(0, listAutocompleteCityNames.size)
-            binding.rclAutocompleteCities.visibility = View.VISIBLE
+            searchBinding.rclAutocompleteCities.visibility = View.VISIBLE
         } else {
             // Если в текстовом поле введены символы
             // Производим поиск совпадений из списка городов
@@ -85,12 +90,12 @@ class ActivityNavigation : AppCompatActivity() {
                 s.contains(charSequence, ignoreCase = true)
             }
             if (listOfMatch.isEmpty()) {
-                binding.rclAutocompleteCities.visibility = View.GONE
+                searchBinding.rclAutocompleteCities.visibility = View.GONE
             } else {
                 listAutocompleteCityNames.clear()
                 listAutocompleteCityNames.addAll(listOfMatch)
                 autocompleteAdapter.notifyItemRangeChanged(0, listAutocompleteCityNames.size)
-                binding.rclAutocompleteCities.visibility = View.VISIBLE
+                searchBinding.rclAutocompleteCities.visibility = View.VISIBLE
             }
         }
 
@@ -114,7 +119,7 @@ class ActivityNavigation : AppCompatActivity() {
         )
         listAutocompleteCityNames.addAll(listCityNames)
 
-        binding.btnAddNewCity.visibility = View.GONE
+        searchBinding.btnAddNewCity.visibility = View.GONE
 
         // Здесь прописываем поведение при изменении текста в поисковой строке
         searchTextWatcher = object : TextWatcher {
@@ -140,14 +145,14 @@ class ActivityNavigation : AppCompatActivity() {
 
         // Устанавливаем и настраиваем поведение RecyclerView
         // Для отображения подсказки при наборе городов в поисковой строке
-        with(binding.rclAutocompleteCities) {
+        with(searchBinding.rclAutocompleteCities) {
             layoutManager = LinearLayoutManager(this@ActivityNavigation)
             adapter = autocompleteAdapter
             itemAnimator = null
             // Добавляем обработчик нажатий по элемету RecycleView
             autocompleteAdapter.setOnCardClickListener { str ->
                 // Функция выполняется при нажатие на подсказку с назаванием города
-                with(binding) {
+                with(searchBinding) {
                     txtSearchCity.requestFocus() // Установили фокус в поле поиска
                     txtSearchCity.setText(str) // Загрузили название города из подсказки
                     rclAutocompleteCities.visibility = View.GONE // Скрыли остальные подсказки
@@ -165,9 +170,9 @@ class ActivityNavigation : AppCompatActivity() {
         }
 
         // Слушатель для текстового поля поиска городов
-        binding.txtSearchCity.addTextChangedListener(this.searchTextWatcher)
+        searchBinding.txtSearchCity.addTextChangedListener(this.searchTextWatcher)
 
-        binding.txtSearchCity.setOnEditorActionListener { textView, i, keyEvent ->
+        searchBinding.txtSearchCity.setOnEditorActionListener { textView, i, keyEvent ->
             when (i) {
                 EditorInfo.IME_ACTION_SEARCH -> {
                     showKeyBoard(isVisible = false)
@@ -185,15 +190,17 @@ class ActivityNavigation : AppCompatActivity() {
             R.id.page_search -> {
                 // Изменяем представление на поиск городов
                 currentScreenMode = ScreenMode.SEARCH
-                binding.groupSearch.visibility = View.VISIBLE
-                binding.groupForecast.visibility = View.GONE
+
+                searchBinding.root.visibility = View.VISIBLE
+                forecastBinding.root.visibility = View.GONE
                 true
             }
             R.id.page_forecast -> {
                 // Изменяем представление на просмотр прогнозов
                 currentScreenMode = ScreenMode.FORECAST
-                binding.groupSearch.visibility = View.GONE
-                binding.groupForecast.visibility = View.VISIBLE
+
+                searchBinding.root.visibility = View.GONE
+                forecastBinding.root.visibility = View.VISIBLE
                 true
             }
             else -> false
@@ -244,6 +251,14 @@ class ActivityNavigation : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityNavigationBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+
+        // Получаем binding для вложенных элементов
+        searchBinding = NavigationSearchBinding.bind(binding.layoutSearch.root)
+        forecastBinding = NavigationForecastBinding.bind(binding.layoutForecast.root)
+
+        //searchBinding = NavigationSearchBinding.inflate(layoutInflater, binding.root, false)
+        //forecastBinding = NavigationForecastBinding.inflate(layoutInflater, binding.root, false)
+
 
         initElements()
         setUiListeners()

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -37,18 +36,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_search_city"
         tools:listitem="@layout/v_item" />
-
-
-
-    <Button
-        style="@style/city_button_add_city"
-        android:id="@+id/btn_add_new_city"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:cornerRadius="12dp"
-        android:visibility="visible"
-        android:text="@string/app_name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rcl_autocomplete_cities" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

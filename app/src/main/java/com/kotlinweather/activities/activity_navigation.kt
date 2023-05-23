@@ -87,10 +87,17 @@ class ActivityNavigation : AppCompatActivity() {
         val addCityListener = DialogInterface.OnClickListener { p0, p1 ->
             val k = 9
             showMsg("dialog click") }
+        val message = with(StringBuilder()){
+            append("Country: ${foundCity.country} \n")
+            append("\n")
+            append("Lat: ${foundCity.lat} \n")
+            append("Lon: ${foundCity.lon}")
+
+        }
 
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(foundCity.name)
-            .setMessage("Country: ${foundCity.country}")
+            .setMessage(message)
             .setNegativeButton("decline") { dialog, which ->}
             .setPositiveButton("OK",addCityListener)
             .setIcon(R.drawable.location_on_48)
@@ -101,14 +108,12 @@ class ActivityNavigation : AppCompatActivity() {
 
     private fun showStabNoCityFound() {
         searchBinding.rclAutocompleteCities.visibility = View.VISIBLE
-        searchBinding.btnAddNewCity.visibility = View.GONE
         createAlertDialog("City ${searchBinding.txtSearchCity.text} doesn't found")
     }
 
     private fun extractAutocompletedCities(charSequence: CharSequence?) {
         // В любом случае скрываем кнопку с найденным городом
         // Так как если пользователь начал изменение поля ввода, надо отобразить подсказку
-        searchBinding.btnAddNewCity.visibility = View.GONE
         if (charSequence.isNullOrEmpty()) {
             // Если поисковый запрос пустой, показываем список всех добавленых городов
             listAutocompleteCityNames.clear()
@@ -151,8 +156,6 @@ class ActivityNavigation : AppCompatActivity() {
         )
 
         listAutocompleteCityNames.addAll(listCityNames)
-
-        searchBinding.btnAddNewCity.visibility = View.GONE
 
         // Здесь прописываем поведение при изменении текста в поисковой строке
         searchTextWatcher = object : TextWatcher {

@@ -146,12 +146,15 @@ class ActivityNavigation : AppCompatActivity() {
             itemAnimator = null
             // Добавляем обработчик нажатий по элемету RecycleView
             autocompleteAdapter.setOnCardClickListener { str ->
-                // Устанавливаем текст, скрываем клавиатуру и список
-                binding.txtSearchCity.setText(str)
-                binding.rclAutocompleteCities.visibility = View.GONE
-                binding.txtSearchCity.setSelection(str.length)
-                hideKeyBoard(isVisible = true)
-                visibility = View.VISIBLE
+                // Функция выполняется при нажатие на подсказку с назаванием города
+                with(binding) {
+                    txtSearchCity.requestFocus() // Установили фокус в поле поиска
+                    txtSearchCity.setText(str) // Загрузили название города из подсказки
+                    rclAutocompleteCities.visibility = View.GONE // Скрыли остальные подсказки
+                    txtSearchCity.setSelection(str.length) // Переместили каретку вконец строки
+                    showKeyBoard(isVisible = true) // Отобразили клавиатуру
+                    rclAutocompleteCities.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -167,7 +170,7 @@ class ActivityNavigation : AppCompatActivity() {
         binding.txtSearchCity.setOnEditorActionListener { textView, i, keyEvent ->
             when (i) {
                 EditorInfo.IME_ACTION_SEARCH -> {
-                    hideKeyBoard(isVisible = false)
+                    showKeyBoard(isVisible = false)
                     findCityLocationByName(textView.text.toString())
                     true
                 }
@@ -197,7 +200,7 @@ class ActivityNavigation : AppCompatActivity() {
         }
     }
 
-    private fun hideKeyBoard(isVisible: Boolean) {
+    private fun showKeyBoard(isVisible: Boolean) {
         val view: View? = this.currentFocus
         // on below line checking if view is not null.
         if (view != null) {
@@ -207,7 +210,7 @@ class ActivityNavigation : AppCompatActivity() {
                 getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
             // on below line hiding our keyboard.
-            if (isVisible)  inputMethodManager.showSoftInput(view,0)
+            if (isVisible) inputMethodManager.showSoftInput(view, 0)
             else inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }

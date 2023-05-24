@@ -13,4 +13,10 @@
         <item name="android:text">@string/app_name</item>
     </style>
 
+    <style name="AlertDialog" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textColorPrimary">?attr/colorPrimaryVariant</item>
+        <item name="android:colorAccent">?attr/colorSecondaryVariant</item>
+    </style>
+
 </resources>

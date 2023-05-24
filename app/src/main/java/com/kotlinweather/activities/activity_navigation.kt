@@ -70,13 +70,14 @@ class ActivityNavigation : AppCompatActivity() {
             .show()
     }
 
-    private fun showAlertDialog(msg: String) {
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle(msg)
+    private fun showAlertDialog(title: String,msg:String) {
+        val dialog = MaterialAlertDialogBuilder(this,R.style.AlertDialog)
+            .setTitle(title)
+            .setMessage(msg)
             .setPositiveButton("OK") { d, w ->
                 //showMsg("OK")
             }
-            .setBackground(getDrawable(R.color.orange))
+            //.setBackground(getDrawable(R.color.orange))
         dialog.show()
 
     }
@@ -115,7 +116,7 @@ class ActivityNavigation : AppCompatActivity() {
 
         // Проверяем, если такой город уже добавлен,
         // Выводим сообщение
-        if (insert) showAlertDialog("City already inserted")
+        if (insert) showAlertDialog("City already inserted","ups")
         else {
             listOfCities[city] = null
             saveCities() // Сохраняем города в SharedPrefs
@@ -127,7 +128,7 @@ class ActivityNavigation : AppCompatActivity() {
 
     private fun showStabNoCityFound() {
         searchBinding.rclAutocompleteCities.visibility = View.VISIBLE
-        showAlertDialog("City ${searchBinding.txtSearchCity.text} doesn't found")
+        showAlertDialog("City ${searchBinding.txtSearchCity.text} doesn't found","ups")
     }
 
     private fun updateSearchBadgeNumber(){
@@ -164,6 +165,40 @@ class ActivityNavigation : AppCompatActivity() {
 
     }
 
+    private fun initAdapter(){
+        // Устанавливаем и настраиваем поведение RecyclerView
+        // Для отображения подсказки при наборе городов в поисковой строке
+        with(searchBinding.rclAutocompleteCities) {
+            layoutManager = LinearLayoutManager(this@ActivityNavigation)
+            adapter = autocompleteAdapter
+            itemAnimator = null
+            visibility = View.VISIBLE
+            // Добавляем обработчик нажатий по элемету RecycleView
+            autocompleteAdapter.setOnCardClickListener { city ->
+                // Функция выполняется при нажатие на подсказку с назаванием города
+                with(searchBinding) {
+                    txtSearchCity.requestFocus() // Установили фокус в поле поиска
+                    txtSearchCity.setText(city.name) // Загрузили название города из подсказки
+                    //rclAutocompleteCities.visibility = View.GONE // Скрыли остальные подсказки
+                    txtSearchCity.setSelection(city.name.length) // Переместили каретку вконец строки
+                    showKeyBoard(isVisible = true) // Отобразили клавиатуру
+                }
+            }
+            autocompleteAdapter.setOnForecastClickListener{
+                val str = StringBuilder().apply {
+                    append("Show Forecast ${it.name}\n")
+                    append("lat: ${it.lat}\n")
+                    append("lon: ${it.lon}\n")
+                    append("country: ${it.country}")
+                }.toString()
+
+                showAlertDialog("Show Forecast ${it.name}\n",str)
+                showKeyBoard(isVisible = false)
+                //changeScreenMode(ScreenMode.FORECAST)
+            }
+        }
+    }
+
     private fun initElements() {
         loadCities()
         listOfCities.keys.forEach{
@@ -171,8 +206,7 @@ class ActivityNavigation : AppCompatActivity() {
         }
         extractAutocompletedCities("")
         updateSearchBadgeNumber()
-
-
+        initAdapter()
 
         // Здесь прописываем поведение при изменении текста в поисковой строке
         searchTextWatcher = object : TextWatcher {
@@ -193,26 +227,6 @@ class ActivityNavigation : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 //TODO("Not yet implemented")
-            }
-        }
-
-        // Устанавливаем и настраиваем поведение RecyclerView
-        // Для отображения подсказки при наборе городов в поисковой строке
-        with(searchBinding.rclAutocompleteCities) {
-            layoutManager = LinearLayoutManager(this@ActivityNavigation)
-            adapter = autocompleteAdapter
-            itemAnimator = null
-            visibility = View.VISIBLE
-            // Добавляем обработчик нажатий по элемету RecycleView
-            autocompleteAdapter.setOnCardClickListener { city ->
-                // Функция выполняется при нажатие на подсказку с назаванием города
-                with(searchBinding) {
-                    txtSearchCity.requestFocus() // Установили фокус в поле поиска
-                    txtSearchCity.setText(city.name) // Загрузили название города из подсказки
-                    rclAutocompleteCities.visibility = View.GONE // Скрыли остальные подсказки
-                    txtSearchCity.setSelection(city.name.length) // Переместили каретку вконец строки
-                    showKeyBoard(isVisible = true) // Отобразили клавиатуру
-                }
             }
         }
     }

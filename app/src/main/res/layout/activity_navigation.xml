@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/layout_search"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.ActivityNavigation">
@@ -10,29 +11,24 @@
     <include
         android:id="@+id/layout_search"
         layout="@layout/navigation_search"
-        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
     <!-- Forecast group -->
     <include
         android:id="@+id/layout_forecast"
-        layout="@layout/navigation_forecast"
-        app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        layout="@layout/navigation_forecast"/>
 
     <!-- Options group -->
     <include
         android:id="@+id/layout_options"
         layout="@layout/navigation_options"
         app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -43,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
 

@@ -35,18 +35,20 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_search_city_autocomplete" />
 
         <!-- style="?attr/materialButtonOutlinedStyle" -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_show_forecast"
+        <!-- style="@style/Widget.MaterialComponents.Button.TextButton.Icon" -->
 
-            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        <com.google.android.material.button.MaterialButton
+            style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/btn_show_forecast"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="forecast"
             android:textColor="?attr/colorOnPrimary"
-            app:icon="@drawable/thunderstorm_opsz40"
+            app:icon="@drawable/location_on_48"
             app:iconSize="28dp"
-            app:iconTint="?attr/colorOnPrimary"
-            app:rippleColor="?attr/colorOnSecondary"
+            app:iconTint="@null"
+            android:drawableStart="@drawable/location_on_48"
+            app:rippleColor="?attr/colorPrimaryVariant"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -58,7 +60,10 @@
             android:layout_height="48dp"
             app:layout_constraintEnd_toStartOf="@id/btn_show_forecast"
             app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"

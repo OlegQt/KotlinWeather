@@ -41,6 +41,10 @@ class OpenWeather() {
         })
     }
 
+    fun requestFiveDayForecast(city:CityInfo,forecast: CityForecast){
+        //val call =
+    }
+
 
     /*fun requestWeather(cityInfo: CityInfo) {
         val call = openWeather.requestWeatherByCityName(cityInfo.name, "metric", appKey, "ru")

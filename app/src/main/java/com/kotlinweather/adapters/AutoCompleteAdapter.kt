@@ -1,12 +1,15 @@
 package com.kotlinweather.adapters
 
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.kotlinweather.R
 import com.kotlinweather.databinding.VItemBinding
 import com.kotlinweather.http.CityInfo
@@ -61,13 +64,21 @@ class AutoCompleteViewHolder(item: View) : ViewHolder(item) {
         if (!icon.isNullOrEmpty()) {
             val iconString = iconUrl.plus(icon).plus("@2x.png")
 
-            // Здесю гружу сразу в имеющийся в xml image
-            // Все грузит, что видно по скриншоту
+            val dr = object : CustomTarget<Drawable>() {
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable>?
+                ) {
+                    binding.btnShowForecast.icon = resource
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) = Unit
+            }
+
             Glide.with(binding.root.context)
+                .asDrawable()
                 .load(iconString)
-                .placeholder(R.drawable.search_off_opsz48)
-                .centerCrop()
-                .into(binding.imgIcon)
+                .into(dr)
         }
     }
 }

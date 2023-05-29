@@ -79,6 +79,10 @@ class AutoCompleteViewHolder(item: View) : ViewHolder(item) {
                 .asDrawable()
                 .load(iconString)
                 .into(dr)
+
+            Glide.with(binding.root.context)
+                .load(iconString)
+                .into(binding.imgIcon)
         }
     }
 }
